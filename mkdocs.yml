@@ -1,0 +1,61 @@
+site_name: TicketBoost
+site_description: Keyboard shortcuts for faster ticket handling in GLPI
+site_author: Juan A. Escobar
+site_url: https://scobjuan.github.io/ticketboost/
+repo_url: https://github.com/scobjuan/ticketboost
+repo_name: scobjuan/ticketboost
+edit_uri: edit/main/docs/
+copyright: Copyright 2026 Juan A. Escobar - GPLv3+
+
+theme:
+  name: material
+  features:
+    - navigation.sections
+    - navigation.top
+    - content.code.copy
+    - search.suggest
+  palette:
+    - media: '(prefers-color-scheme: light)'
+      scheme: default
+      toggle:
+        icon: material/weather-night
+        name: Dark mode
+    - media: '(prefers-color-scheme: dark)'
+      scheme: slate
+      toggle:
+        icon: material/weather-sunny
+        name: Light mode
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - tables
+  - toc:
+      permalink: true
+  - pymdownx.superfences
+  - pymdownx.keys
+  - pymdownx.details
+
+nav:
+  - Home: index.md
+  - Getting started:
+      - Installation: getting-started/installation.md
+      - First steps: getting-started/first-steps.md
+  - User guide:
+      - Leader key and panel: user-guide/leader-key.md
+      - Shortcuts: user-guide/shortcuts.md
+      - Personal settings: user-guide/personal-settings.md
+  - Administrator guide:
+      - Configuration: admin-guide/configuration.md
+      - Profiles and rights: admin-guide/profiles-and-rights.md
+  - Reference:
+      - Compatibility: reference/compatibility.md
+      - Endpoints: reference/endpoints.md
+      - FAQ: reference/faq.md
+  - Development:
+      - Architecture: development/architecture.md
+      - Local environment: development/local-environment.md
+      - Testing: development/testing.md
+      - CI/CD and releases: development/ci-cd.md
+      - Working with coding agents: development/agent-workflow.md
+      - Contributing: development/contributing.md
