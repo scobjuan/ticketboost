@@ -1,0 +1,1 @@
+- YYYY-MM-DD <one line: what was done>. Stopped at: <exact point>. Next: <exact next action>.

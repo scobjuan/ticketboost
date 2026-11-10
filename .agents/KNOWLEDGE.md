@@ -1,0 +1,105 @@
+# Project knowledge (max 300 lines)
+
+Reusable building blocks and hard-won lessons. Read the utilities section before writing
+any helper; register every new reusable piece here in the same session. Remove entries
+that become false. Format: `path` `signature` - purpose.
+
+## Existing utilities - USE, do not duplicate
+
+### TypeScript (frontend/src)
+
+- `core/safe.ts` `safe(fn, fallback, onError = report)` - run code without ever throwing into GLPI; `report(error)` logs with the `[ticketboost]` prefix.
+- `boot.ts` `boot(doc): boolean` and `READY_ATTRIBUTE` (`data-ticketboost`) - plugin entry; sets `data-ticketboost="ready"` on `<html>` (e2e smoke relies on it).
+
+### PHP (src, namespace GlpiPlugin\Ticketboost)
+
+- `Assets` `new Assets($public_dir)->scripts()|stylesheets()` - built assets that exist, relative to `public/`; used by `plugin_init_ticketboost()`.
+
+### Tests and e2e
+
+- `e2e/support/glpi.ts` `login(page, user)` and `USERS` - log in with the default GLPI accounts (`admin`, `tech`, `normal`, `selfservice`).
+
+### Scripts and tools
+
+- `scripts/agents-check.mjs` - rule guards; `--message FILE` (commit-msg hook), `--text-env VAR` (CI PR text).
+- `scripts/lib/agents-check-lib.mjs` - pure checks: `findEmojis`, `findAttribution`, `checkCappedFile`, `parsePo`, `findUntranslated`, `checkFrontmatter`, `stripCommitComments`, `sha256`.
+- `scripts/agents-link.mjs <FILENAME>` - local symlink to AGENTS.md, excluded via `.git/info/exclude`.
+- `scripts/php-ci.sh` - the PHP gate (composer, parallel-lint, php-cs-fixer, PHPStan, Rector, DB install, PHPUnit + coverage); `STEPS=lint|test`, `DB_HOST`, `COVERAGE_MIN`.
+- `tools/coverage-check.php <clover.xml> <min>` - fails below the PHP coverage minimum.
+- `scripts/locales-compile.sh` - `.po` -> `.mo` plus regional copies (en_US, es_419, es_AR, es_CL, es_CO, es_EC, es_MX, es_VE).
+- `scripts/build-release.sh <version>` - allowlisted runtime files -> `dist/ticketboost-<version>.tar.bz2`.
+- `scripts/glpi-plugin.sh "<compose>" <services...>` - install + activate the plugin in running containers.
+- `scripts/glpi-wait.sh <urls...>` - wait for GLPI to answer.
+- `scripts/size-check.mjs` - 15 KB gzip budget for `public/js` + `public/css`.
+
+## Patterns
+
+- New user-facing string: add the msgid to `locales/ticketboost.pot`, `en_GB.po` and
+  `es_ES.po` in the same commit (see `.agents/playbooks/add-translation.md`).
+- New action (from Phase 2): PHP action class + registry entry + rights check + JSON
+  response, TS action + keymap default, Vitest + PHPUnit + Playwright spec, docs keymap
+  table (see `.agents/playbooks/add-action.md`).
+- Frontend entry points and event handlers always go through `safe()`.
+
+## GLPI gotchas
+
+- GLPI 11+ serves only the plugin `public/` directory; hooks reference assets relative
+  to it (`js/ticketboost.js`), the same pattern pluginsGLPI/fields uses.
+- `plugins/<key>` folder name, plugin key and gettext domain must all be `ticketboost`;
+  GLPI autoloads `GlpiPlugin\Ticketboost\` from `src/`.
+- Native previous/next navigation lives in `src/CommonGLPI.php` (around line 1150-1230)
+  and reads `$_SESSION['glpilistitems'][Ticket::class]`, filled by the last search.
+  It binds Ctrl+Left/Right. Our circular navigation reuses the same session list.
+- GLPI native shortcuts to avoid: Ctrl+Alt+G (fuzzy search), Ctrl+Alt+E (entity selector),
+  Ctrl+Left/Right (item navigation).
+- TinyMCE editors live in iframes: keyboard events do not bubble to the parent document;
+  listeners must be attached inside each editor too.
+- Plugin PHP tooling (PHPStan, Rector, php-cs-fixer, PHPUnit bootstrap) depends on a GLPI
+  development checkout at `../../`; it only runs inside the official CI image
+  `ghcr.io/glpi-project/githubactions-glpi-apache:php-X-glpi-Y`.
+- GLPI 12 requires PHP >= 8.3; GLPI 11 supports PHP 8.2 to 8.5.
+- Languages declared by GLPI 11/12: en_GB, en_US, es_ES, es_419, es_AR, es_CL, es_CO,
+  es_EC, es_MX, es_VE (`src/Glpi/Locale/LanguageRegistry.php` in 12).
+- Official runtime image `glpi/glpi:<version>` auto-installs when the five `GLPI_DB_*`
+  variables are set; default accounts: glpi/glpi, tech/tech, normal/normal,
+  post-only/postonly. GLPI lives in `/var/www/glpi`, runs as www-data.
+- GLPI core itself uses Playwright for e2e (`tests/e2e` in glpi-project/glpi): its page
+  objects are a good reference for selectors.
+- PHPStan level max with the safe-rule extension flags `define()`: annotate each with
+  `@phpstan-ignore theCodingMachineSafe.function` (same as the official template). Assign
+  whole arrays to `$PLUGIN_HOOKS[...]['ticketboost']` to avoid offset-on-mixed errors.
+- Rector baseline prefers `final readonly class` and `__DIR__ . '/../x'` over `dirname(__DIR__)`.
+- GLPI `tools:licence_headers_check` scans every file type, including build outputs; the
+  project checks PHP headers itself in `scripts/php-ci.sh`.
+- `ghcr.io/glpi-project/githubactions-mariadb` keeps data in /dev/shm: it needs
+  `shm_size: 1g` (compose) or `--shm-size=1g`, otherwise InnoDB fails with error 28.
+- The plugin works mounted read-only: GLPI never writes into `plugins/ticketboost`.
+- No runtime Composer dependencies: GLPI autoloads `src/`, so release archives ship no
+  `vendor/`. Adding a runtime dependency requires `composer install --no-dev` in the
+  release job and adding vendor to the `scripts/build-release.sh` allowlist.
+
+## Testing learnings
+
+- Guard tests must not contain forbidden names or emojis: inject custom hashes
+  (`sha256('acmebot')`) and write emojis as `\u{...}` escapes.
+- Vitest runs `frontend/tests/**` and `scripts/tests/**`; coverage thresholds apply to
+  `frontend/src/**` only (`main.ts` excluded because it just calls `boot`).
+- Playwright WebKit does not run on Arch hosts (missing Ubuntu libs such as libicu74):
+  use `make e2e-container ARGS="--project=glpi12-webkit"` (official Playwright image,
+  host network). Chromium and Firefox run on the host.
+- The smoke spec proves install + activation + bundle loading on both interfaces by
+  checking `<html data-ticketboost="ready">`.
+
+## Tooling learnings
+
+- TypeScript 7 is not supported by typescript-eslint 8 (peer `<6.1`): TS is pinned to `~6.0`.
+- pnpm 12 blocks dependency build scripts unless approved in `pnpm-workspace.yaml`
+  `allowBuilds`.
+- Vite library mode: `fileName: () => 'js/ticketboost.js'` and
+  `cssFileName: 'css/ticketboost'` place outputs directly under `public/`.
+- Never write the two-word phrase that tools put in footers ("generated" followed by
+  "with") in docs: the attribution guard rejects it. Use "tool-generated".
+- Rootless podman cannot bind ports below 1024: GLPI runs on 8011 (11) and 8012 (12).
+- Prettier must not format `docs/`: it breaks MkDocs admonition indentation.
+- Running the GLPI CI image as root (rootless podman) needs `--allow-superuser` for the
+  console; `scripts/php-ci.sh` adds it automatically.
