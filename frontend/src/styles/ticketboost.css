@@ -1,0 +1,4 @@
+/* All plugin classes are prefixed with tb- to avoid collisions with GLPI styles. */
+:root {
+  --tb-radius: 0.5rem;
+}

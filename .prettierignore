@@ -1,0 +1,16 @@
+node_modules
+vendor
+coverage
+public/js
+public/css
+pnpm-lock.yaml
+composer.lock
+playwright-report
+test-results
+site
+var
+LICENSE
+CHANGELOG.md
+locales
+*.php
+docs
