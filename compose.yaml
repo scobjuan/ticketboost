@@ -1,0 +1,99 @@
+# Local and CI environment. Works with podman-compose and docker compose.
+#   make up           GLPI 11 on :8011 and GLPI 12 on :8012 (admin: glpi / glpi)
+#   make test-php     PHP lint, static analysis and PHPUnit inside the official GLPI CI image
+name: ticketboost
+
+x-glpi: &glpi
+  restart: unless-stopped
+  depends_on:
+    db:
+      condition: service_healthy
+  healthcheck:
+    test: ['CMD', 'curl', '-fsS', '-o', '/dev/null', 'http://localhost/']
+    interval: 10s
+    timeout: 5s
+    retries: 60
+    start_period: 30s
+
+services:
+  db:
+    image: docker.io/library/mariadb:10.11
+    restart: unless-stopped
+    environment:
+      MARIADB_ROOT_PASSWORD: root
+    volumes:
+      - ./docker/db/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+      - db_data:/var/lib/mysql
+    healthcheck:
+      test: ['CMD', 'healthcheck.sh', '--connect', '--innodb_initialized']
+      interval: 5s
+      timeout: 5s
+      retries: 30
+
+  glpi11:
+    <<: *glpi
+    image: docker.io/glpi/glpi:${GLPI11_VERSION:-11.0.12}
+    environment:
+      GLPI_DB_HOST: db
+      GLPI_DB_PORT: '3306'
+      GLPI_DB_NAME: glpi11
+      GLPI_DB_USER: glpi
+      GLPI_DB_PASSWORD: glpi
+      GLPI_CRONTAB_ENABLED: '0'
+    volumes:
+      - .:/var/www/glpi/plugins/ticketboost
+      - glpi11_data:/var/glpi
+    ports:
+      - '8011:80'
+
+  glpi12:
+    <<: *glpi
+    image: docker.io/glpi/glpi:${GLPI12_VERSION:-12.0.1}
+    environment:
+      GLPI_DB_HOST: db
+      GLPI_DB_PORT: '3306'
+      GLPI_DB_NAME: glpi12
+      GLPI_DB_USER: glpi
+      GLPI_DB_PASSWORD: glpi
+      GLPI_CRONTAB_ENABLED: '0'
+    volumes:
+      - .:/var/www/glpi/plugins/ticketboost
+      - glpi12_data:/var/glpi
+    ports:
+      - '8012:80'
+
+  # Test database for PHPUnit (same image family as the official plugin CI).
+  testdb:
+    image: ghcr.io/glpi-project/githubactions-mariadb:10.11
+    profiles: [tools]
+    # The image keeps its data in /dev/shm, like the official plugin CI.
+    shm_size: 1g
+    environment:
+      MYSQL_ALLOW_EMPTY_PASSWORD: 'yes'
+      MYSQL_DATABASE: glpi
+
+  # GLPI development checkout with PHPUnit, PHPStan, Rector and php-cs-fixer.
+  tools11:
+    image: ghcr.io/glpi-project/githubactions-glpi-apache:php-8.2-glpi-11.0.x
+    profiles: [tools]
+    user: root
+    depends_on: [testdb]
+    working_dir: /var/www/glpi/plugins/ticketboost
+    volumes:
+      - .:/var/www/glpi/plugins/ticketboost
+    entrypoint: ['bash', 'scripts/php-ci.sh']
+
+  tools12:
+    image: ghcr.io/glpi-project/githubactions-glpi-apache:php-8.3-glpi-12.0.x
+    profiles: [tools]
+    user: root
+    depends_on: [testdb]
+    working_dir: /var/www/glpi/plugins/ticketboost
+    volumes:
+      - .:/var/www/glpi/plugins/ticketboost
+    entrypoint: ['bash', 'scripts/php-ci.sh']
+
+volumes:
+  db_data:
+  glpi11_data:
+  glpi12_data:
