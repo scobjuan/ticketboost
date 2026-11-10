@@ -1,0 +1,19 @@
+# TicketBoost plugin for GLPI.
+# Copyright (C) 2026 Juan A. Escobar
+# This file is distributed under the same license as the TicketBoost package (GPLv3+).
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: TicketBoost\n"
+"Report-Msgid-Bugs-To: https://github.com/scobjuan/ticketboost/issues\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "TicketBoost"
+msgstr ""
+
+msgid "Keyboard shortcuts for faster ticket handling in GLPI"
+msgstr ""
