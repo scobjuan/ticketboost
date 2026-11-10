@@ -1,0 +1,22 @@
+<phpunit
+    bootstrap="tests/bootstrap.php"
+    colors="true"
+    cacheDirectory="var/phpunit"
+    failOnWarning="true"
+    failOnRisky="true"
+>
+    <source>
+        <include>
+            <directory>src</directory>
+        </include>
+    </source>
+
+    <testsuites>
+        <testsuite name="Unit">
+            <directory suffix="Test.php">tests/Unit</directory>
+        </testsuite>
+        <testsuite name="Integration">
+            <directory suffix="Test.php">tests/Integration</directory>
+        </testsuite>
+    </testsuites>
+</phpunit>

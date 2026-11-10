@@ -1,0 +1,33 @@
+{
+  "name": "scobjuan/ticketboost",
+  "description": "Keyboard shortcuts for faster ticket handling in GLPI",
+  "type": "glpi-plugin",
+  "license": "GPL-3.0-or-later",
+  "authors": [
+    {
+      "name": "Juan A. Escobar",
+      "email": "scobjuan@gmail.com"
+    }
+  ],
+  "require": {
+    "php": ">=8.2"
+  },
+  "autoload": {
+    "psr-4": {
+      "GlpiPlugin\\Ticketboost\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "GlpiPlugin\\Ticketboost\\Tests\\": "tests/"
+    }
+  },
+  "config": {
+    "autoloader-suffix": "PluginTicketboost",
+    "optimize-autoloader": true,
+    "platform": {
+      "php": "8.2.99"
+    },
+    "sort-packages": true
+  }
+}

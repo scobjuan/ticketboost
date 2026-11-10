@@ -1,0 +1,50 @@
+<root>
+   <name>TicketBoost</name>
+   <key>ticketboost</key>
+   <state>alpha</state>
+   <logo>https://raw.githubusercontent.com/scobjuan/ticketboost/main/docs/assets/logo.png</logo>
+   <description>
+      <short>
+         <en>Keyboard shortcuts for faster ticket handling in GLPI.</en>
+         <es>Atajos de teclado para gestionar tickets más rápido en GLPI.</es>
+      </short>
+      <long>
+         <en>TicketBoost lets technicians and end users handle tickets from the keyboard. Tap the leader key (Ctrl by default) to open a compact shortcut panel, then press a single key to go to the next or previous ticket, assign or unassign people, change status or priority, close the ticket, or open the followup and task editors. Every action respects GLPI rights, business rules and notifications. Available in English and Spanish.</en>
+         <es>TicketBoost permite a técnicos y usuarios finales gestionar tickets desde el teclado. Pulse la tecla líder (Ctrl por defecto) para abrir un panel compacto de atajos y luego una sola tecla para ir al ticket siguiente o anterior, asignar o desasignar personas, cambiar estado o prioridad, cerrar el ticket o abrir los editores de seguimiento y tarea. Todas las acciones respetan los derechos, reglas de negocio y notificaciones de GLPI. Disponible en inglés y español.</es>
+      </long>
+   </description>
+   <homepage>https://github.com/scobjuan/ticketboost</homepage>
+   <download>https://github.com/scobjuan/ticketboost/releases</download>
+   <issues>https://github.com/scobjuan/ticketboost/issues</issues>
+   <readme>https://github.com/scobjuan/ticketboost/blob/main/README.md</readme>
+   <authors>
+      <author>Juan A. Escobar</author>
+   </authors>
+   <versions>
+      <version>
+         <num>0.0.0</num><!-- x-release-please-version -->
+         <compatibility>~11.0.0</compatibility>
+         <compatibility>~12.0.0</compatibility>
+      </version>
+   </versions>
+   <langs>
+      <lang>en_GB</lang>
+      <lang>es_ES</lang>
+   </langs>
+   <license>GPLv3+</license>
+   <tags>
+      <en>
+         <tag>keyboard</tag>
+         <tag>shortcuts</tag>
+         <tag>hotkeys</tag>
+         <tag>productivity</tag>
+         <tag>helpdesk</tag>
+      </en>
+      <es>
+         <tag>teclado</tag>
+         <tag>atajos</tag>
+         <tag>productividad</tag>
+         <tag>mesa de ayuda</tag>
+      </es>
+   </tags>
+</root>
