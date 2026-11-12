@@ -30,6 +30,7 @@
 
 namespace GlpiPlugin\Ticketboost;
 
+use Profile;
 use Session;
 
 /**
@@ -39,6 +40,18 @@ use Session;
 final class Rights
 {
     public const NAME = 'plugin_ticketboost';
+
+    /**
+     * Lets the right reach the session of self-service profiles. GLPI drops every right
+     * that is not on `Profile::$helpdesk_rights` when it loads a helpdesk profile, so
+     * without this the shortcuts would stay off for self-service users.
+     */
+    public static function exposeToSelfService(): void
+    {
+        if (!in_array(self::NAME, Profile::$helpdesk_rights, true)) {
+            Profile::$helpdesk_rights[] = self::NAME;
+        }
+    }
 
     public static function canUse(): bool
     {

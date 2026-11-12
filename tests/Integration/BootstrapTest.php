@@ -37,6 +37,7 @@ use GlpiPlugin\Ticketboost\Http\RequestGuard;
 use GlpiPlugin\Ticketboost\Keymap\ActionCatalog;
 use GlpiPlugin\Ticketboost\Preference;
 use GlpiPlugin\Ticketboost\Rights;
+use Profile;
 use User;
 
 final class BootstrapTest extends DbTestCase
@@ -72,6 +73,24 @@ final class BootstrapTest extends DbTestCase
             ['next', 'previous', 'list', 'my_tickets', 'followup', 'help'],
             ActionAvailability::fromCapabilities(ActionAvailability::capabilities()),
         );
+    }
+
+    public function testSelfServiceProfilesKeepThePluginRightInTheSession(): void
+    {
+        $this->login('post-only', 'postonly');
+
+        $this->assertContains(Rights::NAME, Profile::$helpdesk_rights);
+        $this->assertTrue(Rights::canUse());
+        $this->assertFalse(Rights::canConfigure());
+        $this->assertTrue(Payload::forCurrentUser()['enabled']);
+    }
+
+    public function testExposingTheRightTwiceDoesNotDuplicateIt(): void
+    {
+        Rights::exposeToSelfService();
+        Rights::exposeToSelfService();
+
+        $this->assertCount(1, array_keys(Profile::$helpdesk_rights, Rights::NAME, true));
     }
 
     public function testThePanelOffersOnlyImplementedActions(): void
