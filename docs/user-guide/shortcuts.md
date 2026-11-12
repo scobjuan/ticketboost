@@ -20,7 +20,9 @@ leader key. Every binding can be changed.
 | ++r++                    | Change priority                                                         | Ticket   | If allowed   |
 | ++question++             | Show all shortcuts                                                      | Anywhere | Yes          |
 
-Without the leader key: ++ctrl+enter++ sends the followup or task you are writing.
+Without the leader key: ++ctrl+enter++ (++cmd+enter++ on macOS) sends the followup or
+task you are writing, also when the focus is on another field of the form, such as the
+duration of a task.
 
 ## Which list do next and previous use?
 
