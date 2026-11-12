@@ -17,3 +17,111 @@ msgstr ""
 
 msgid "Keyboard shortcuts for faster ticket handling in GLPI"
 msgstr ""
+
+msgid "All shortcuts"
+msgstr ""
+
+msgid "Search..."
+msgstr ""
+
+msgid "No results"
+msgstr ""
+
+msgid "The search failed"
+msgstr ""
+
+msgid "all shortcuts"
+msgstr ""
+
+msgid "close"
+msgstr ""
+
+msgid "back"
+msgstr ""
+
+msgid "select"
+msgstr ""
+
+msgid "mark"
+msgstr ""
+
+msgid "confirm"
+msgstr ""
+
+msgid "Navigate"
+msgstr ""
+
+msgid "Assign"
+msgstr ""
+
+msgid "Ticket"
+msgstr ""
+
+msgid "General"
+msgstr ""
+
+msgid "Next ticket"
+msgstr ""
+
+msgid "Previous ticket"
+msgstr ""
+
+msgid "Back to the list"
+msgstr ""
+
+msgid "My tickets"
+msgstr ""
+
+msgid "Assign to me"
+msgstr ""
+
+msgid "Assign to someone else"
+msgstr ""
+
+msgid "Unassign me"
+msgstr ""
+
+msgid "Unassign others"
+msgstr ""
+
+msgid "Change status"
+msgstr ""
+
+msgid "Close ticket"
+msgstr ""
+
+msgid "Add a followup"
+msgstr ""
+
+msgid "Add a task"
+msgstr ""
+
+msgid "Change priority"
+msgstr ""
+
+msgid "Show all shortcuts"
+msgstr ""
+
+msgid "The action failed"
+msgstr ""
+
+msgid "Authentication required"
+msgstr ""
+
+msgid "Method not allowed"
+msgstr ""
+
+msgid "Invalid request"
+msgstr ""
+
+msgid "You are not allowed to do this"
+msgstr ""
+
+msgid "TicketBoost preferences"
+msgstr ""
+
+msgid "Use the keyboard shortcuts"
+msgstr ""
+
+msgid "Configure TicketBoost"
+msgstr ""

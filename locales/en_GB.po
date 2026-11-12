@@ -20,3 +20,111 @@ msgstr "TicketBoost"
 
 msgid "Keyboard shortcuts for faster ticket handling in GLPI"
 msgstr "Keyboard shortcuts for faster ticket handling in GLPI"
+
+msgid "All shortcuts"
+msgstr "All shortcuts"
+
+msgid "Search..."
+msgstr "Search..."
+
+msgid "No results"
+msgstr "No results"
+
+msgid "The search failed"
+msgstr "The search failed"
+
+msgid "all shortcuts"
+msgstr "all shortcuts"
+
+msgid "close"
+msgstr "close"
+
+msgid "back"
+msgstr "back"
+
+msgid "select"
+msgstr "select"
+
+msgid "mark"
+msgstr "mark"
+
+msgid "confirm"
+msgstr "confirm"
+
+msgid "Navigate"
+msgstr "Navigate"
+
+msgid "Assign"
+msgstr "Assign"
+
+msgid "Ticket"
+msgstr "Ticket"
+
+msgid "General"
+msgstr "General"
+
+msgid "Next ticket"
+msgstr "Next ticket"
+
+msgid "Previous ticket"
+msgstr "Previous ticket"
+
+msgid "Back to the list"
+msgstr "Back to the list"
+
+msgid "My tickets"
+msgstr "My tickets"
+
+msgid "Assign to me"
+msgstr "Assign to me"
+
+msgid "Assign to someone else"
+msgstr "Assign to someone else"
+
+msgid "Unassign me"
+msgstr "Unassign me"
+
+msgid "Unassign others"
+msgstr "Unassign others"
+
+msgid "Change status"
+msgstr "Change status"
+
+msgid "Close ticket"
+msgstr "Close ticket"
+
+msgid "Add a followup"
+msgstr "Add a followup"
+
+msgid "Add a task"
+msgstr "Add a task"
+
+msgid "Change priority"
+msgstr "Change priority"
+
+msgid "Show all shortcuts"
+msgstr "Show all shortcuts"
+
+msgid "The action failed"
+msgstr "The action failed"
+
+msgid "Authentication required"
+msgstr "Authentication required"
+
+msgid "Method not allowed"
+msgstr "Method not allowed"
+
+msgid "Invalid request"
+msgstr "Invalid request"
+
+msgid "You are not allowed to do this"
+msgstr "You are not allowed to do this"
+
+msgid "TicketBoost preferences"
+msgstr "TicketBoost preferences"
+
+msgid "Use the keyboard shortcuts"
+msgstr "Use the keyboard shortcuts"
+
+msgid "Configure TicketBoost"
+msgstr "Configure TicketBoost"
