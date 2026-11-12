@@ -16,6 +16,10 @@ that become false. Format: `path` `signature` - purpose.
 - `keymap/binding.ts` `parseBinding`, `formatBinding`, `normalizeBinding`, `displayBinding`, `matchesBinding` - binding notation of ADR 0017.
 - `keymap/catalog.ts` `ACTION_IDS`, `CATALOG`, `GROUP_ORDER`, `defaultKeymap()`, `mergeKeymap(base, overrides)`, `findAction(id)` - static action catalog.
 - `keymap/validator.ts` `validateKeymap(keymap): KeymapIssue[]`, `usableBindings(texts)`, `RESERVED_BINDINGS` - validation and conflicts (PHP must mirror).
+- `api/client.ts` `createApi(doc, baseUrl, fetcher?)` (`get`, `post`), `csrfToken(doc)`, `ApiError` - plugin endpoint client; sends `X-Requested-With` and the GLPI 11 CSRF token.
+- `bootstrap.ts` `parseBootstrap(data): AppConfig | null` - validates the server payload (trust boundary); null disables the panel.
+- `context/detect.ts` `detectContext(location): 'ticket' | 'other'` - ticket form is `/front/ticket.form.php?id=N` on 11 and 12.
+- `boot.ts` `startPanel(doc, api)`, `PANEL_ATTRIBUTE` (`data-ticketboost-panel` = `ready` | `off`, e2e waits on it), `BOOTSTRAP_ENDPOINT`.
 - `i18n/translate.ts` `createTranslator(labels)` - label lookup, falls back to the key.
 - `ui/modal.ts` `createModal(doc, t)` (`open`, `push`, `close`, `isOpen`, `handleKey`), views `MenuView` / `PickerView`, `SEARCH_DELAY_MS` - the panel.
 - `ui/fuzzy.ts` `fuzzyScore(query, text)`, `fuzzyFilter(query, items, text)` - accent-insensitive subsequence match.
@@ -27,8 +31,21 @@ that become false. Format: `path` `signature` - purpose.
 
 - `Assets` `new Assets($public_dir)->scripts()|stylesheets()` - built assets that exist, relative to `public/`; used by `plugin_init_ticketboost()`.
 
+- `Rights` `NAME`, `canUse()`, `canConfigure()`, `fromFlags/toFlags`, `toInt(mixed)`, `exposeToSelfService()` - the `plugin_ticketboost` profile right.
+- `Keymap\ActionCatalog` `ids()`, `defaultKeymap()`, `groupOf()`, `contextOf()` - action catalog (mirror of `keymap/catalog.ts`).
+- `Keymap\KeymapValidator` `normalize()`, `validate()`, `RESERVED` - ADR 0017 grammar (mirror of `keymap/binding.ts`); both sides run `shared/keymap-cases.json`.
+- `Keymap\KeymapResolver` `effective(admin, user)`, `issues(admin, user)`, `normalizeLayer()` - layered keymap; invalid layers are skipped.
+- `Config\LeaderSettings` `fromArray()` (clamps), `toArray()`; `Config\PluginConfig` `load()`, `save()`, `fromValues()`, `toValues()` - admin defaults in `Config` context `plugin:ticketboost`.
+- `Preference` (table `glpi_plugin_ticketboost_preferences`) `forUser($id)`, `saveForUser(...)` - per-user overrides, validated against the admin keymap.
+- `Install\Installer` `install()`, `uninstall()` - idempotent; reinstall keeps admin choices.
+- `Http\JsonResponse` `success()`, `error()`, `send()`; `Http\RequestGuard` `guard($method, $level)`, `evaluate(...)` - envelope and request checks (ADR 0018).
+- `Bootstrap\ActionAvailability` `fromCapabilities()`, `forCurrentUser()`, `IMPLEMENTED`; `Bootstrap\Labels` `all()`; `Bootstrap\Payload` `build()`, `forCurrentUser()` - what `ajax/bootstrap.php` returns.
+- `ProfileTab` `render()` - TicketBoost tab on the profile form; posts to `front/profile.form.php`.
+
 ### Tests and e2e
 
+- `tests/Integration/*` extend `Glpi\Tests\DbTestCase` (`login('tech', 'tech')`, transaction per test); `InstallerTest` uses plain `TestCase` because DDL commits.
+- `shared/keymap-cases.json` - cases shared by Vitest and PHPUnit; change the grammar there first.
 - `e2e/support/glpi.ts` `login(page, user)` and `USERS` - log in with the default GLPI accounts (`admin`, `tech`, `normal`, `selfservice`).
 - `frontend/tests/support/keys.ts` `keyLike(key, extra)`, `dispatchKey(target, type, init)`, `tapControl(target)` - fake and real key events for Vitest.
 
@@ -63,6 +80,22 @@ that become false. Format: `path` `signature` - purpose.
 - Native previous/next navigation lives in `src/CommonGLPI.php` (around line 1150-1230)
   and reads `$_SESSION['glpilistitems'][Ticket::class]`, filled by the last search.
   It binds Ctrl+Left/Right. Our circular navigation reuses the same session list.
+- CSRF: a kernel listener checks every non-GET request before a legacy endpoint runs. GLPI 11
+  needs the `X-Glpi-Csrf-Token` header (token from `<meta property="glpi:csrf_token">`) for
+  XHR; GLPI 12 uses `Sec-Fetch-Site`/`Origin` and has no tokens (`Session::checkCSRF` is
+  deprecated). Anonymous requests get GLPI's own HTML 401 before plugin code runs.
+- Self-service (`helpdesk`) profiles lose every right not in `Profile::$helpdesk_rights`
+  when the session loads (`Profile::cleanProfile`): add plugin rights to it (ADR 0018).
+- `Session::haveRight()` returns an int in GLPI 11 and a bool in 12: never use `=== true`.
+  Rector removes `(bool)` casts because the 12 stubs say bool; type the values `bool|int`.
+- `DBmysql::tableExists($t)` caches per request: pass `false` as second argument after DDL.
+- Plugin endpoints are served at `/plugins/ticketboost/ajax/x.php` and the bundle at
+  `/plugins/ticketboost/js/ticketboost.js`, so `new URL('../ajax/', import.meta.url)` works.
+- `thecodingmachine/safe` ships with GLPI: PHPStan requires `use function Safe\preg_match`
+  (and `json_decode`, `json_encode`); `http_response_code()` is forbidden, use
+  `header('...', true, $status)`.
+- A class `GlpiPlugin\Ticketboost\Preference` maps to `glpi_plugin_ticketboost_preferences`;
+  do not redeclare `$rightname` (typed in GLPI 12, untyped in 11).
 - GLPI native shortcuts to avoid: Ctrl+Alt+G (fuzzy search), Ctrl+Alt+E (entity selector),
   Ctrl+Left/Right (item navigation).
 - TinyMCE editors live in iframes: keyboard events do not bubble to the parent document;
@@ -128,6 +161,9 @@ that become false. Format: `path` `signature` - purpose.
   `pull-request-header` / `pull-request-footer` in `release-please-config.json`. Before
   enabling any tool that writes commits, PRs or releases, check its default texts against
   RULES.md and override them before its first run.
+- `make fix-php` applies Rector and php-cs-fixer in the container; run it before `make lint-php`.
+  `make test-php` stops at the first failing GLPI version: run `tools11` and `tools12` separately to see both.
+- zsh does not word-split unquoted variables: wrap multi-command loops in `bash -c`.
 - Rootless podman cannot bind ports below 1024: GLPI runs on 8011 (11) and 8012 (12).
 - Writing `\u` escapes through the file editor stores the literal characters; use ASCII
   regex classes (`/\p{M}/gu`) or write the escape from a script.
