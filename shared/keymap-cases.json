@@ -1,0 +1,117 @@
+{
+  "defaults": {
+    "next": ["KeyN", "ArrowRight"],
+    "previous": ["KeyP", "ArrowLeft"],
+    "list": ["KeyL"],
+    "my_tickets": ["KeyM"],
+    "assign_me": ["KeyA"],
+    "assign_other": ["KeyO"],
+    "unassign_me": ["KeyU"],
+    "unassign_others": ["KeyX"],
+    "change_status": ["KeyS"],
+    "close": ["KeyC"],
+    "followup": ["KeyF"],
+    "task": ["KeyT"],
+    "change_priority": ["KeyR"],
+    "help": ["?"]
+  },
+  "reserved": [
+    "Ctrl+KeyW",
+    "Ctrl+KeyT",
+    "Ctrl+KeyN",
+    "Ctrl+Tab",
+    "Ctrl+Shift+KeyT",
+    "Ctrl+Shift+KeyN",
+    "Ctrl+Shift+KeyW",
+    "Ctrl+Alt+KeyG",
+    "Ctrl+Alt+KeyE",
+    "Ctrl+ArrowLeft",
+    "Ctrl+ArrowRight",
+    "Escape",
+    "Tab",
+    "Shift+Tab",
+    "Backspace"
+  ],
+  "normalize": [
+    ["KeyN", "KeyN"],
+    ["Shift+Ctrl+Digit1", "Ctrl+Shift+Digit1"],
+    ["Meta+Shift+Alt+Ctrl+KeyA", "Ctrl+Alt+Shift+Meta+KeyA"],
+    ["Alt+Ctrl+KeyG", "Ctrl+Alt+KeyG"],
+    ["?", "?"],
+    ["Shift+?", "?"],
+    ["+", "+"],
+    ["Ctrl++", "Ctrl++"],
+    ["F12", "F12"],
+    ["Numpad4", "Numpad4"]
+  ],
+  "invalid": [
+    "",
+    "Ctrl+",
+    "Hyper+KeyN",
+    "Ctrl+Ctrl+KeyN",
+    "KeyNN",
+    "F13",
+    " ",
+    "ab"
+  ],
+  "validate": [
+    {
+      "name": "unknown action",
+      "keymap": { "reboot": ["KeyB"] },
+      "issues": [{ "code": "unknown_action", "action": "reboot" }]
+    },
+    {
+      "name": "invalid binding",
+      "keymap": { "next": ["Hyper+KeyN"] },
+      "issues": [
+        { "code": "invalid_binding", "action": "next", "binding": "Hyper+KeyN" }
+      ]
+    },
+    {
+      "name": "reserved binding is normalized first",
+      "keymap": { "next": ["Alt+Ctrl+KeyG"] },
+      "issues": [
+        {
+          "code": "reserved_binding",
+          "action": "next",
+          "binding": "Ctrl+Alt+KeyG"
+        }
+      ]
+    },
+    {
+      "name": "conflict reports both sides",
+      "keymap": { "next": ["KeyN"], "list": ["KeyL"], "close": ["KeyN"] },
+      "issues": [
+        {
+          "code": "conflict",
+          "action": "next",
+          "binding": "KeyN",
+          "with": ["close"]
+        },
+        {
+          "code": "conflict",
+          "action": "close",
+          "binding": "KeyN",
+          "with": ["next"]
+        }
+      ]
+    },
+    {
+      "name": "same binding twice for one action",
+      "keymap": { "next": ["KeyN", "KeyN"] },
+      "issues": [
+        {
+          "code": "conflict",
+          "action": "next",
+          "binding": "KeyN",
+          "with": ["next"]
+        }
+      ]
+    },
+    {
+      "name": "empty list disables an action",
+      "keymap": { "next": [] },
+      "issues": []
+    }
+  ]
+}
