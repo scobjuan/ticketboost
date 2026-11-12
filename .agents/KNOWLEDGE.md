@@ -99,6 +99,11 @@ that become false. Format: `path` `signature` - purpose.
   `cssFileName: 'css/ticketboost'` place outputs directly under `public/`.
 - Never write the two-word phrase that tools put in footers ("generated" followed by
   "with") in docs: the attribution guard rejects it. Use "tool-generated".
+- release-please's default pull request header (robot shortcode, "beep boop") and footer
+  (the footer phrase above) break the emoji and attribution rules. Keep the neutral
+  `pull-request-header` / `pull-request-footer` in `release-please-config.json`. Before
+  enabling any tool that writes commits, PRs or releases, check its default texts against
+  RULES.md and override them before its first run.
 - Rootless podman cannot bind ports below 1024: GLPI runs on 8011 (11) and 8012 (12).
 - Prettier must not format `docs/`: it breaks MkDocs admonition indentation.
 - Running the GLPI CI image as root (rootless podman) needs `--allow-superuser` for the
