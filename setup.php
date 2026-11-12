@@ -29,6 +29,7 @@
  */
 
 use GlpiPlugin\Ticketboost\Assets;
+use GlpiPlugin\Ticketboost\ProfileTab;
 
 // The version line is updated by the release tooling. Do not edit by hand.
 /** @phpstan-ignore theCodingMachineSafe.function (constants are defined once, at plugin load) */
@@ -55,6 +56,8 @@ function plugin_init_ticketboost(): void
     if (!Plugin::isPluginActive('ticketboost')) {
         return;
     }
+
+    Plugin::registerClass(ProfileTab::class, ['addtabon' => Profile::class]);
 
     $assets = new Assets(__DIR__ . '/public');
     $PLUGIN_HOOKS['add_javascript_module']['ticketboost'] = $assets->scripts();

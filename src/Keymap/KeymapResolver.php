@@ -32,7 +32,9 @@ namespace GlpiPlugin\Ticketboost\Keymap;
 
 /**
  * Computes the effective keymap from the defaults, the admin overrides and the user
- * overrides.
+ * overrides, and validates override layers.
+ *
+ * @phpstan-import-type Issue from KeymapValidator
  */
 final class KeymapResolver
 {
@@ -51,8 +53,13 @@ final class KeymapResolver
     {
         $keymap = ActionCatalog::defaultKeymap();
         foreach ([$admin, $user] as $layer) {
-            $candidate = self::apply($keymap, $layer);
-            if ($candidate !== null && KeymapValidator::validate($candidate) === []) {
+            $normalized = self::normalizeLayer($layer);
+            if ($normalized === null) {
+                continue;
+            }
+
+            $candidate = array_merge($keymap, $normalized);
+            if (KeymapValidator::validate($candidate) === []) {
                 $keymap = $candidate;
             }
         }
@@ -61,31 +68,53 @@ final class KeymapResolver
     }
 
     /**
-     * @param array<string, list<string>> $keymap
-     * @param array<array-key, mixed>     $layer
+     * Lists what is wrong with an admin and user layer pair, for validating input before
+     * it is stored.
      *
-     * @return array<string, list<string>>|null Null when the layer is not a map of lists of strings.
+     * @param array<array-key, mixed> $admin
+     * @param array<array-key, mixed> $user
+     *
+     * @return list<Issue> Empty when both layers are valid together.
      */
-    private static function apply(array $keymap, array $layer): ?array
+    public static function issues(array $admin, array $user): array
     {
+        $admin_layer = self::normalizeLayer($admin);
+        $user_layer  = self::normalizeLayer($user);
+        if ($admin_layer === null || $user_layer === null) {
+            return [['code' => KeymapValidator::INVALID_BINDING, 'action' => '']];
+        }
+
+        return KeymapValidator::validate(array_merge(ActionCatalog::defaultKeymap(), $admin_layer, $user_layer));
+    }
+
+    /**
+     * Normalizes every binding of an override layer.
+     *
+     * @param array<array-key, mixed> $layer
+     *
+     * @return array<string, list<string>>|null Null when the layer is not a map of lists of valid bindings.
+     */
+    public static function normalizeLayer(array $layer): ?array
+    {
+        $normalized = [];
         foreach ($layer as $action => $bindings) {
             if (!is_string($action) || !is_array($bindings)) {
                 return null;
             }
 
-            $normalized = [];
+            $list = [];
             foreach ($bindings as $text) {
                 $binding = is_string($text) ? KeymapValidator::normalize($text) : null;
                 if ($binding === null) {
                     return null;
                 }
 
-                $normalized[] = $binding;
+                $list[] = $binding;
             }
 
-            $keymap[$action] = $normalized;
+            $normalized[$action] = $list;
         }
 
-        return $keymap;
+        return $normalized;
     }
 }
