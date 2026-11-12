@@ -92,7 +92,8 @@ that become false. Format: `path` `signature` - purpose.
 
 ## Tooling learnings
 
-- TypeScript 7 is not supported by typescript-eslint 8 (peer `<6.1`): TS is pinned to `~6.0`.
+- TypeScript 7 is not supported by typescript-eslint 8 (peer `<6.1`): TS is pinned to `~6.0`
+  and `.github/dependabot.yml` ignores TS major updates; drop both once supported.
 - pnpm 12 blocks dependency build scripts unless approved in `pnpm-workspace.yaml`
   `allowBuilds`.
 - Vite library mode: `fileName: () => 'js/ticketboost.js'` and
