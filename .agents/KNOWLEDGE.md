@@ -9,7 +9,19 @@ that become false. Format: `path` `signature` - purpose.
 ### TypeScript (frontend/src)
 
 - `core/safe.ts` `safe(fn, fallback, onError = report)` - run code without ever throwing into GLPI; `report(error)` logs with the `[ticketboost]` prefix.
-- `boot.ts` `boot(doc): boolean` and `READY_ATTRIBUTE` (`data-ticketboost`) - plugin entry; sets `data-ticketboost="ready"` on `<html>` (e2e smoke relies on it).
+- `boot.ts` `boot(doc): boolean` and `READY_ATTRIBUTE` (`data-ticketboost`) - plugin entry; installs Ctrl+Enter and sets `data-ticketboost="ready"` on `<html>` (e2e smoke relies on it).
+- `core/dom.ts` `h(doc, tag, attrs, children)`, `replaceChildren(el, nodes)` - build DOM without HTML parsing (strings become text nodes).
+- `app.ts` `startApp(doc, AppConfig, ActionHandlers): App` (`open`, `close`, `attach(doc)`, `destroy`) - wires leader, keymap and panel; Phase 2 calls it with the bootstrap payload.
+- `keys/leader.ts` `createLeader(LeaderConfig, onLeader)` (`keydown`, `keyup`, `reset`), `DEFAULT_LEADER`, `KeyLike` - tap/hold state machine on timers.
+- `keymap/binding.ts` `parseBinding`, `formatBinding`, `normalizeBinding`, `displayBinding`, `matchesBinding` - binding notation of ADR 0017.
+- `keymap/catalog.ts` `ACTION_IDS`, `CATALOG`, `GROUP_ORDER`, `defaultKeymap()`, `mergeKeymap(base, overrides)`, `findAction(id)` - static action catalog.
+- `keymap/validator.ts` `validateKeymap(keymap): KeymapIssue[]`, `usableBindings(texts)`, `RESERVED_BINDINGS` - validation and conflicts (PHP must mirror).
+- `i18n/translate.ts` `createTranslator(labels)` - label lookup, falls back to the key.
+- `ui/modal.ts` `createModal(doc, t)` (`open`, `push`, `close`, `isOpen`, `handleKey`), views `MenuView` / `PickerView`, `SEARCH_DELAY_MS` - the panel.
+- `ui/fuzzy.ts` `fuzzyScore(query, text)`, `fuzzyFilter(query, items, text)` - accent-insensitive subsequence match.
+- `ui/toast.ts` `showToast(doc, message, kind, durationMs)` - live-region toasts.
+- `editor/tinymce.ts` `tinymceOf(win)`, `watchEditors(win, onDocument)` - reach every TinyMCE iframe document.
+- `editor/submit.ts` `attachSubmitShortcut(doc)`, `submittableForm(target)` - Ctrl+Enter for timeline forms (ADR 0016).
 
 ### PHP (src, namespace GlpiPlugin\Ticketboost)
 
@@ -18,6 +30,7 @@ that become false. Format: `path` `signature` - purpose.
 ### Tests and e2e
 
 - `e2e/support/glpi.ts` `login(page, user)` and `USERS` - log in with the default GLPI accounts (`admin`, `tech`, `normal`, `selfservice`).
+- `frontend/tests/support/keys.ts` `keyLike(key, extra)`, `dispatchKey(target, type, init)`, `tapControl(target)` - fake and real key events for Vitest.
 
 ### Scripts and tools
 
@@ -54,6 +67,12 @@ that become false. Format: `path` `signature` - purpose.
   Ctrl+Left/Right (item navigation).
 - TinyMCE editors live in iframes: keyboard events do not bubble to the parent document;
   listeners must be attached inside each editor too.
+- GLPI already sends forms on Ctrl+Enter inside TinyMCE (`editor.addShortcut('ctrl+13')`
+  in `src/Html.php`) and in `#page form textarea` (`public/js/common.js`), both through
+  `submitparentForm()`: never add a second handler there (ADR 0016).
+- Timeline answer blocks: `#new-ITILFollowup-block`, `#new-TicketTask-block` (Bootstrap
+  collapse, form lazy-loaded on first open in 12); forms post to `itilfollowup.form.php` /
+  `tickettask.form.php` with one submit button `add` (new) or `update` (edit).
 - Plugin PHP tooling (PHPStan, Rector, php-cs-fixer, PHPUnit bootstrap) depends on a GLPI
   development checkout at `../../`; it only runs inside the official CI image
   `ghcr.io/glpi-project/githubactions-glpi-apache:php-X-glpi-Y`.
@@ -80,6 +99,10 @@ that become false. Format: `path` `signature` - purpose.
 
 ## Testing learnings
 
+- Apps started in a test listen on `document`: call `app.destroy()` in `afterEach`, or
+  later tests see several panels. `toHaveBeenCalledWith(doc)` deep-compares documents
+  (two empty ones are equal): compare `mock.calls` with `toBe`.
+- happy-dom: `vi.advanceTimersByTimeAsync(0)` flushes promise chains under fake timers.
 - Guard tests must not contain forbidden names or emojis: inject custom hashes
   (`sha256('acmebot')`) and write emojis as `\u{...}` escapes.
 - Vitest runs `frontend/tests/**` and `scripts/tests/**`; coverage thresholds apply to
@@ -106,6 +129,10 @@ that become false. Format: `path` `signature` - purpose.
   enabling any tool that writes commits, PRs or releases, check its default texts against
   RULES.md and override them before its first run.
 - Rootless podman cannot bind ports below 1024: GLPI runs on 8011 (11) and 8012 (12).
+- Writing `\u` escapes through the file editor stores the literal characters; use ASCII
+  regex classes (`/\p{M}/gu`) or write the escape from a script.
+- The bundle size check measures only what `main.ts` imports; until Phase 2 wires
+  `startApp`, measure the full app with a temporary entry (about 6.5 KB gzip in Phase 1).
 - Prettier must not format `docs/`: it breaks MkDocs admonition indentation.
 - Running the GLPI CI image as root (rootless podman) needs `--allow-superuser` for the
   console; `scripts/php-ci.sh` adds it automatically.
