@@ -1,7 +1,7 @@
 ---
 id: 0018
 title: Request security, self-service rights and panel scope in the backend core
-status: proposed
+status: accepted
 date: 2026-11-12
 ---
 
