@@ -48,7 +48,7 @@ final class ActionAvailability
      * Actions that have a working endpoint. It grows with each phase; the panel never
      * lists an action that would do nothing.
      */
-    public const IMPLEMENTED = ['help'];
+    public const IMPLEMENTED = ['next', 'previous', 'list', 'my_tickets', 'help'];
 
     /**
      * @param array<string, bool|int> $caps Rights of the user, see {@see self::capabilities()}.

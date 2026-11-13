@@ -82,7 +82,7 @@ final class ActionAvailabilityTest extends TestCase
 
     public function testOnlyImplementedActionsAreOffered(): void
     {
-        $this->assertSame(['help'], ActionAvailability::IMPLEMENTED);
+        $this->assertSame(['next', 'previous', 'list', 'my_tickets', 'help'], ActionAvailability::IMPLEMENTED);
         foreach (ActionAvailability::IMPLEMENTED as $action) {
             $this->assertTrue(ActionCatalog::exists($action));
         }

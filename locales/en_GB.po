@@ -120,6 +120,12 @@ msgstr "Invalid request"
 msgid "You are not allowed to do this"
 msgstr "You are not allowed to do this"
 
+msgid "There is no other ticket to go to"
+msgstr "There is no other ticket to go to"
+
+msgid "There was no result list, so you are moving through your unresolved tickets"
+msgstr "There was no result list, so you are moving through your unresolved tickets"
+
 msgid "TicketBoost preferences"
 msgstr "TicketBoost preferences"
 

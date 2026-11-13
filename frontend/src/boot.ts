@@ -1,3 +1,4 @@
+import { createActionHandlers } from './actions/handlers'
 import type { Api } from './api/client'
 import type { App } from './app'
 import { startApp } from './app'
@@ -41,15 +42,7 @@ export async function startPanel(doc: Document, api: Api): Promise<App | null> {
   const available = config.available.filter(
     (id) => context === 'ticket' || findAction(id)?.context === 'anywhere'
   )
-  return startApp(
-    doc,
-    { ...config, available },
-    {
-      run: (id) => {
-        throw new Error(`The action ${id} is not available yet`)
-      }
-    }
-  )
+  return startApp(doc, { ...config, available }, createActionHandlers(doc, api))
 }
 
 /**

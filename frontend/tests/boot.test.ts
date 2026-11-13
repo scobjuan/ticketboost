@@ -164,7 +164,7 @@ describe('startPanel', () => {
     expect(app).not.toBeNull()
   })
 
-  it('shows the error toast when an action has no implementation yet', async () => {
+  it('shows the error toast when an action gets no usable answer', async () => {
     const spy = vi.spyOn(console, 'error').mockImplementation(() => undefined)
     app = await startPanel(document, fakeApi({ data: payload }))
     tapControl(document)
