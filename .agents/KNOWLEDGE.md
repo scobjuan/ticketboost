@@ -18,7 +18,8 @@ that become false. Format: `path` `signature` - purpose.
 - `keymap/validator.ts` `validateKeymap(keymap): KeymapIssue[]`, `usableBindings(texts)`, `RESERVED_BINDINGS` - validation and conflicts (PHP must mirror).
 - `api/client.ts` `createApi(doc, baseUrl, fetcher?)` (`get`, `post`), `csrfToken(doc)`, `ApiError` - plugin endpoint client; sends `X-Requested-With` and the GLPI 11 CSRF token.
 - `bootstrap.ts` `parseBootstrap(data): AppConfig | null` - validates the server payload (trust boundary); null disables the panel.
-- `context/detect.ts` `detectContext(location): 'ticket' | 'other'` - ticket form is `/front/ticket.form.php?id=N` on 11 and 12.
+- `context/detect.ts` `ticketId(location): number | null`, `detectContext(location)` - ticket form is `/front/ticket.form.php?id=N` on 11 and 12.
+- `actions/handlers.ts` `createActionHandlers(doc, api, navigate?)`, `sameOriginUrl(location, target)`, `NAVIGATE_ENDPOINT` - runs panel actions; navigation asks `navigate.php` and opens its `redirect` (same origin only); a refusal shows the server message as a toast. Phase 4 extends `run` here.
 - `boot.ts` `startPanel(doc, api)`, `PANEL_ATTRIBUTE` (`data-ticketboost-panel` = `ready` | `off`, e2e waits on it), `BOOTSTRAP_ENDPOINT`.
 - `i18n/translate.ts` `createTranslator(labels)` - label lookup, falls back to the key.
 - `ui/modal.ts` `createModal(doc, t)` (`open`, `push`, `close`, `isOpen`, `handleKey`), views `MenuView` / `PickerView`, `SEARCH_DELAY_MS` - the panel.
@@ -31,7 +32,7 @@ that become false. Format: `path` `signature` - purpose.
 
 - `Assets` `new Assets($public_dir)->scripts()|stylesheets()` - built assets that exist, relative to `public/`; used by `plugin_init_ticketboost()`.
 
-- `Rights` `NAME`, `canUse()`, `canConfigure()`, `fromFlags/toFlags`, `toInt(mixed)`, `exposeToSelfService()` - the `plugin_ticketboost` profile right.
+- `Rights` `NAME`, `has($rightname, $right)` (use instead of `Session::haveRight()`), `canUse()`, `canConfigure()`, `fromFlags/toFlags`, `toInt(mixed)`, `exposeToSelfService()` - the `plugin_ticketboost` profile right.
 - `Keymap\ActionCatalog` `ids()`, `defaultKeymap()`, `groupOf()`, `contextOf()` - action catalog (mirror of `keymap/catalog.ts`).
 - `Keymap\KeymapValidator` `normalize()`, `validate()`, `RESERVED` - ADR 0017 grammar (mirror of `keymap/binding.ts`); both sides run `shared/keymap-cases.json`.
 - `Keymap\KeymapResolver` `effective(admin, user)`, `issues(admin, user)`, `normalizeLayer()` - layered keymap; invalid layers are skipped.
@@ -40,13 +41,15 @@ that become false. Format: `path` `signature` - purpose.
 - `Install\Installer` `install()`, `uninstall()` - idempotent; reinstall keeps admin choices.
 - `Http\JsonResponse` `success()`, `error()`, `send()`; `Http\RequestGuard` `guard($method, $level)`, `evaluate(...)` - envelope and request checks (ADR 0018).
 - `Bootstrap\ActionAvailability` `fromCapabilities()`, `forCurrentUser()`, `IMPLEMENTED`; `Bootstrap\Labels` `all()`; `Bootstrap\Payload` `build()`, `forCurrentUser()` - what `ajax/bootstrap.php` returns.
+- `Navigation\ListWalker` `step($ids, $current, $step, $accept)` (circular, skips unacceptable ids), `Navigation\NavigationRequest` `fromQuery()` (whitelist `to`/`id`), `Navigation\Navigator` `respond($query)`, `myTicketsUrl()` - behind `ajax/navigate.php` (GET, read-only: returns the URL in `redirect`).
 - `ProfileTab` `render()` - TicketBoost tab on the profile form; posts to `front/profile.form.php`.
 
 ### Tests and e2e
 
 - `tests/Integration/*` extend `Glpi\Tests\DbTestCase` (`login('tech', 'tech')`, transaction per test); `InstallerTest` uses plain `TestCase` because DDL commits.
 - `shared/keymap-cases.json` - cases shared by Vitest and PHPUnit; change the grammar there first.
-- `e2e/support/glpi.ts` `login(page, user)` and `USERS` - log in with the default GLPI accounts (`admin`, `tech`, `normal`, `selfservice`).
+- `e2e/support/glpi.ts` `login(page, user)`, `USERS` (`admin`, `tech`, `tech1`, `tech2`, `normal`, `selfservice`), `waitForPanel(page)`, `leaderThen(page, key)`, `openSeedList(page)` - log in, drive the panel, open the seeded list (it also fills GLPI's session list).
+- `e2e/seed/seed.php` (run by `make seed` / `scripts/glpi-seed.sh`, idempotent) - users `tech1`, `tech2` (Technician) and tickets `[tb-seed] 1-6`: 1-3 assigned to tech1, 4-5 to tech2; 1, 4, 6 requested by post-only.
 - `frontend/tests/support/keys.ts` `keyLike(key, extra)`, `dispatchKey(target, type, init)`, `tapControl(target)` - fake and real key events for Vitest.
 
 ### Scripts and tools
@@ -133,6 +136,16 @@ that become false. Format: `path` `signature` - purpose.
 
 ## Testing learnings
 
+- Seeding from a script: `require '/var/www/glpi/vendor/autoload.php'; (new Glpi\Kernel\Kernel('production'))->boot();`
+  works in 11 and 12 as `www-data`; set `$_SESSION['glpiID']` and entity keys for business rules.
+- `User::add()` also gives new users the default self-service profile and it wins at login:
+  set `profiles_id` (the user's default profile) to Technician after adding the profile link.
+- The plugin directory is bind-mounted into the containers: PHP edits are live, so never edit
+  PHP while Playwright runs. `pkill -f playwright` also kills the agent shell (exit 144).
+- `page.waitForURL('**/ticket.form.php?id=*')` matches the page you are already on: wait for
+  the exact new id, or a predicate that differs from the starting one.
+- GLPI fills `$_SESSION['glpilistitems']` when a ticket list renders; a fresh browser context
+  has none (use one to test the fallback). Notices across a redirect: `Session::addMessageAfterRedirect`.
 - Apps started in a test listen on `document`: call `app.destroy()` in `afterEach`, or
   later tests see several panels. `toHaveBeenCalledWith(doc)` deep-compares documents
   (two empty ones are equal): compare `mock.calls` with `toBe`.

@@ -7,37 +7,37 @@ Decisions go to `.agents/decisions/`, reusable knowledge to `.agents/KNOWLEDGE.m
 
 ## Current state (max 20)
 
-- `main` at `a5de0ae` (Phases 0, 1 and 2 merged, PRs #4, #5 and #6). CI green. Release PR #3
+- `main` at `d7e8df8` (Phases 0, 1 and 2 merged, PRs #4 to #7). Release PR #3
   `chore(main): release 0.1.0` stays open: do NOT merge it before Phase 7.
-- Phase 2 (backend core) is on `main`: installer (table `glpi_plugin_ticketboost_preferences`,
-  right `plugin_ticketboost`), Profile tab, `PluginConfig`, `Preference`, PHP keymap
-  validator and resolver, `RequestGuard`, `ajax/bootstrap.php`, labels in en_GB and es_ES,
-  API client and `startPanel()` in the frontend.
+- Phase 3 (navigation) is implemented and committed on `feat/navigation` (3 local commits), NOT pushed yet:
+  `ajax/navigate.php` (GET, read-only, returns the URL in `redirect`), `Navigation\ListWalker`,
+  `NavigationRequest`, `Navigator`; actions `next`, `previous`, `list`, `my_tickets` are in
+  `ActionAvailability::IMPLEMENTED`; frontend `actions/handlers.ts` replaced the throwing `run`;
+  seed data (`e2e/seed/seed.php`, `make seed`, CI step); e2e `navigation.spec.ts`; docs updated.
+- Fallback without a result list follows ADR 0004: the user's unresolved tickets (assigned for
+  technicians, requested for self-service), priority desc, date asc, with a notice through
+  `Session::addMessageAfterRedirect`.
+- Verified locally: PHPUnit 152 tests on GLPI 11 and 12 (99.4% lines), Vitest 259 tests (99%),
+  lint, bundle 8.1 KB of 15 KB gzip, e2e 15/15 on glpi11-chromium, glpi12-chromium,
+  glpi12-firefox and glpi12-webkit (`make e2e-container`). Not yet run: CI on a fresh database
+  (the seed creates tech1 and tech2 from scratch there).
 - ADR 0018 is `accepted` (no `ajax/context.php`; CSRF stays with the GLPI kernel).
-- The panel only offers `help` today (`ActionAvailability::IMPLEMENTED`): the root menu is
-  empty and `?` opens the overview. Each later phase adds its actions to that list.
-- Use `Rights::has()` for `Session::haveRight()` (int in GLPI 11, bool in 12); a `(bool)`
-  cast breaks Rector on 12 and a bare return breaks PHPStan on 11.
+- Use `Rights::has()` for `Session::haveRight()` (int in GLPI 11, bool in 12).
 - Commits must not carry `Co-Authored-By` trailers (RULES.md); commit scopes are limited to
   the commitlint list.
 
 ## In progress (max 10)
 
-- `docs/accept-adr-0018` (local, not pushed): ADR 0018 accepted, `context.php` removed from
-  PLAN.md, MEMORY updated. Waiting for owner approval to push and open the PR.
+- `feat/navigation`: waiting for owner approval to push and open the PR.
 
 ## Next steps (max 20)
 
-1. Push `docs/accept-adr-0018`, open the PR, wait for green CI, squash-merge on owner
-   approval. Then sync `main` and delete the merged remote branches `feat/leader-key` and
-   `feat/backend-core` (owner already agreed in principle; confirm when doing it).
-2. Phase 3 - navigation (PLAN.md section 8) on `feat/navigation`: seed data for e2e
-   (users `tech1`, `tech2`, `selfservice`, about 6 tickets), `ajax/navigate.php`
-   (circular next/previous over `$_SESSION['glpilistitems']['Ticket']`, fallback list),
-   actions `next`, `previous`, `list`, `my_tickets` (add them to
-   `ActionAvailability::IMPLEMENTED`), frontend action registry replacing the throwing
-   `run` in `startPanel`, e2e specs. First POST/GET action endpoint also gets the CSRF
-   e2e spec (ADR 0018).
+1. Ask the owner to approve pushing `feat/navigation` and opening the PR; after CI is green
+   and the owner approves, squash-merge. If the seed fails on CI, check `e2e/seed/seed.php`.
+2. Phase 4 - assignment (PLAN.md section 8): `assign_me`, `assign_other` (picker),
+   `unassign_me`, `unassign_others`, `ajax/action.php` (POST) and `ajax/search.php`. The first
+   POST endpoint must ship the e2e spec that proves a POST without CSRF protection is refused
+   on GLPI 11 and 12 (ADR 0018); `navigate.php` is GET and needs none.
 3. Phase 6 reminder: key recorder and conflict UI use `KeymapResolver::issues()`; admin
    page needs `front/config.form.php` and the `config_page` hook (not registered yet).
 4. Check how the bundle behaves on the login page (it loads there; bootstrap answers 401
@@ -47,7 +47,7 @@ Decisions go to `.agents/decisions/`, reusable knowledge to `.agents/KNOWLEDGE.m
 
 ## Blockers and waiting on owner (max 10)
 
-- Approval to push the docs PR.
+- Approval to push `feat/navigation` and open its PR (after the checks pass).
 - Branch protection on `main` is still not active (rulesets `[]` on 2026-11-12).
 
 ## Open questions (max 10)
@@ -82,6 +82,8 @@ Decisions go to `.agents/decisions/`, reusable knowledge to `.agents/KNOWLEDGE.m
 - 2026-11-12 Phase 2 PR #6 reviewed: CI failed on GLPI 11 (PHPStan) and then on 12 (Rector);
   fixed with `Rights::has()`, squash-merged as `a5de0ae`. ADR 0018 accepted on branch
   `docs/accept-adr-0018`. Stopped at: owner approval to push it. Next: "Next steps" 1.
+- 2026-11-12 Phase 2 follow-ups merged (PR #6 fixes, PR #7 ADR 0018 accepted). Phase 3 implemented
+  on `feat/navigation` (see Current state). Stopped at: owner approval to push `feat/navigation`.
 
 ## ADR index
 
