@@ -126,6 +126,8 @@ jobs:
         run: make up COMPOSE="docker compose"
       - name: Install and activate the plugin
         run: ./scripts/glpi-plugin.sh "docker compose" glpi11 glpi12
+      - name: Seed the e2e data
+        run: ./scripts/glpi-seed.sh "docker compose" glpi11 glpi12
       - run: pnpm exec playwright install --with-deps chromium firefox webkit
       - run: pnpm e2e
       - name: GLPI logs on failure

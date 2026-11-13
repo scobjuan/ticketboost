@@ -23,6 +23,11 @@ Playwright projects combine a GLPI version and a browser: `glpi11-chromium`,
 `glpi12-chromium`, `glpi12-firefox`, `glpi12-webkit`. Run one with
 `pnpm e2e --project=glpi11-chromium`. Helpers live in `e2e/support/`.
 
+The specs rely on seeded data: users `tech1` and `tech2` (Technician profile, password equal
+to the login) and six tickets titled `[tb-seed] 1` to `[tb-seed] 6`. `make seed` creates
+them in both containers and is idempotent; `make e2e` runs it first, and CI runs
+`scripts/glpi-seed.sh` before Playwright.
+
 ## Rules
 
 - Every change in `src/` or `frontend/src/` comes with tests.

@@ -5,7 +5,7 @@ GLPI_SERVICES ?= glpi11 glpi12
 GLPI_URLS ?= http://localhost:8011 http://localhost:8012
 PLAYWRIGHT_VERSION ?= $(shell node -p "require('@playwright/test/package.json').version" 2>/dev/null)
 
-.PHONY: help install up down reset logs install-plugin build locales lint lint-ts lint-php \
+.PHONY: help install up down reset logs install-plugin seed build locales lint lint-ts lint-php \
 	typecheck fix-php test test-ts test-php test-php11 test-php12 e2e e2e-ui e2e-container size agents-check docs \
 	check release-dry clean
 
@@ -37,6 +37,9 @@ locales: ## Compile .po files into .mo files
 install-plugin: build ## Install and activate the plugin in the running GLPI containers
 	./scripts/glpi-plugin.sh "$(COMPOSE)" $(GLPI_SERVICES)
 
+seed: ## Seed the e2e data (users tech1 and tech2, six tickets) in the running GLPI containers
+	./scripts/glpi-seed.sh "$(COMPOSE)" $(GLPI_SERVICES)
+
 lint: lint-ts lint-php ## All linters
 
 lint-ts: ## ESLint, Prettier and TypeScript
@@ -66,13 +69,13 @@ test-php11:
 test-php12:
 	$(COMPOSE) --profile tools run --rm -e STEPS=test tools12
 
-e2e: install-plugin ## Playwright against the running GLPI containers
+e2e: install-plugin seed ## Playwright against the running GLPI containers
 	pnpm e2e
 
 e2e-ui: ## Playwright UI mode
 	pnpm e2e --ui
 
-e2e-container: install-plugin ## Playwright inside the official image (hosts without Playwright system deps)
+e2e-container: install-plugin seed ## Playwright inside the official image (hosts without Playwright system deps)
 	podman run --rm --network host -v "$(CURDIR):/work:Z" -w /work -e CI \
 		mcr.microsoft.com/playwright:v$(PLAYWRIGHT_VERSION)-noble node node_modules/@playwright/test/cli.js test $(ARGS)
 
