@@ -1,38 +1,36 @@
 # Project memory (max 250 lines, prune every session)
 
-Updated: 2026-11-12 | Version: unreleased (target 0.1.0) | Phase: 2 implemented, owner review
+Updated: 2026-11-12 | Version: unreleased (target 0.1.0) | Phase: 2 merged, Phase 3 next
 
 Live state for the next session. Keep it short and current; git keeps the history.
 Decisions go to `.agents/decisions/`, reusable knowledge to `.agents/KNOWLEDGE.md`.
 
 ## Current state (max 20)
 
-- `main` at `4591dbe` (Phase 0 and Phase 1 merged, PRs #4 and #5). CI green. Release PR #3
+- `main` at `a5de0ae` (Phases 0, 1 and 2 merged, PRs #4, #5 and #6). CI green. Release PR #3
   `chore(main): release 0.1.0` stays open: do NOT merge it before Phase 7.
-- Phase 2 (backend core) implemented on branch `feat/backend-core`, pushed with its PR open (squash-merge after owner review):
-  installer (table `glpi_plugin_ticketboost_preferences`, right `plugin_ticketboost`,
-  default config), Profile tab, `PluginConfig`, `Preference`, PHP keymap validator and
-  resolver (shared cases with TS in `shared/keymap-cases.json`), `RequestGuard`,
-  `ajax/bootstrap.php`, labels in en_GB and es_ES, API client and `startPanel()` in the
-  frontend. The panel now opens on real GLPI 11 and 12 (leader tap, `?` overview, Esc).
-- Verified: PHPUnit 109 tests, 99.5% line coverage, on GLPI 11 and 12; Vitest 238 tests,
-  99% coverage; bundle about 7.8 KB gzip of 15 KB; e2e 21/21 on glpi11-chromium,
-  glpi12-chromium, glpi12-firefox, plus 7/7 on glpi12-webkit (`make e2e-container`); plugin install, uninstall and reinstall clean with the
-  real console on both versions.
+- Phase 2 (backend core) is on `main`: installer (table `glpi_plugin_ticketboost_preferences`,
+  right `plugin_ticketboost`), Profile tab, `PluginConfig`, `Preference`, PHP keymap
+  validator and resolver, `RequestGuard`, `ajax/bootstrap.php`, labels in en_GB and es_ES,
+  API client and `startPanel()` in the frontend.
+- ADR 0018 is `accepted` (no `ajax/context.php`; CSRF stays with the GLPI kernel).
 - The panel only offers `help` today (`ActionAvailability::IMPLEMENTED`): the root menu is
   empty and `?` opens the overview. Each later phase adds its actions to that list.
-- ADR 0018 is `proposed`: it drops `ajax/context.php` from the Phase 2 plan (the page URL
-  already gives the context) and records the CSRF, self-service and rights findings.
+- Use `Rights::has()` for `Session::haveRight()` (int in GLPI 11, bool in 12); a `(bool)`
+  cast breaks Rector on 12 and a bare return breaks PHPStan on 11.
+- Commits must not carry `Co-Authored-By` trailers (RULES.md); commit scopes are limited to
+  the commitlint list.
 
 ## In progress (max 10)
 
-- `feat/backend-core` (pushed, PR open): waiting for owner review and merge; confirm
-  ADR 0018 on the PR (then set its status to `accepted`).
+- `docs/accept-adr-0018` (local, not pushed): ADR 0018 accepted, `context.php` removed from
+  PLAN.md, MEMORY updated. Waiting for owner approval to push and open the PR.
 
 ## Next steps (max 20)
 
-1. Owner reviews the Phase 2 PR and confirms ADR 0018; after the squash merge, sync `main`
-   and delete the merged remote branches `feat/leader-key` and `feat/backend-core`.
+1. Push `docs/accept-adr-0018`, open the PR, wait for green CI, squash-merge on owner
+   approval. Then sync `main` and delete the merged remote branches `feat/leader-key` and
+   `feat/backend-core` (owner already agreed in principle; confirm when doing it).
 2. Phase 3 - navigation (PLAN.md section 8) on `feat/navigation`: seed data for e2e
    (users `tech1`, `tech2`, `selfservice`, about 6 tickets), `ajax/navigate.php`
    (circular next/previous over `$_SESSION['glpilistitems']['Ticket']`, fallback list),
@@ -49,9 +47,8 @@ Decisions go to `.agents/decisions/`, reusable knowledge to `.agents/KNOWLEDGE.m
 
 ## Blockers and waiting on owner (max 10)
 
-- Review and merge of the Phase 2 PR, decision on ADR 0018 (dropping `ajax/context.php`).
+- Approval to push the docs PR.
 - Branch protection on `main` is still not active (rulesets `[]` on 2026-11-12).
-- Remote branch `feat/leader-key` is merged and can be deleted (owner to confirm).
 
 ## Open questions (max 10)
 
@@ -82,6 +79,9 @@ Decisions go to `.agents/decisions/`, reusable knowledge to `.agents/KNOWLEDGE.m
 - 2026-11-12 Phase 2 implemented on `feat/backend-core` with ADR 0018 (proposed). Found and
   fixed on real GLPI: helpdesk rights whitelist, `haveRight` int vs bool, `tableExists`
   cache. Phase 2 pushed and PR opened. Stopped at: owner review of the PR. Next: "Next steps" 1.
+- 2026-11-12 Phase 2 PR #6 reviewed: CI failed on GLPI 11 (PHPStan) and then on 12 (Rector);
+  fixed with `Rights::has()`, squash-merged as `a5de0ae`. ADR 0018 accepted on branch
+  `docs/accept-adr-0018`. Stopped at: owner approval to push it. Next: "Next steps" 1.
 
 ## ADR index
 

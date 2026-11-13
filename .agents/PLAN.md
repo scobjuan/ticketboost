@@ -152,7 +152,7 @@ Repo: github.com/scobjuan/ticketboost (exists, empty, private). Local: /home/jue
 ```
 ticketboost/
   setup.php  hook.php  plugin.xml  composer.json  package.json  Makefile  compose.yaml
-  ajax/                 bootstrap.php, context.php, action.php, navigate.php, search.php
+  ajax/                 bootstrap.php, action.php, navigate.php, search.php
   front/                config.form.php (admin), preference.form.php
   src/                  PHP, PSR-4 GlpiPlugin\Ticketboost\
     Action/             ActionInterface, ActionRegistry, AssignMe, AssignOther, UnassignMe,
@@ -277,7 +277,7 @@ translated in es_ES; required frontmatter on ADRs and playbooks.
   conflicts, modal + submenus + picker shell, help overlay, TinyMCE bridge, Ctrl+Enter,
   static catalog stub. Exit: TS coverage >= 90%, bundle < 15 KB gzip.
 - **Phase 2 - Backend core.** Installer/migrations, rights + Profile tab, admin config,
-  user preferences table, bootstrap/context endpoints, RequestGuard, i18n plumbing.
+  user preferences table, bootstrap endpoint (no context endpoint, ADR 0018), RequestGuard, i18n plumbing.
   Exit: PHP coverage >= 85%, plugin installs/uninstalls cleanly on 11 and 12.
 - **Phase 3 - Navigation.** next/prev circular, fallback list, back to list, my tickets. E2E.
 - **Phase 4 - Assignment.** assign me, assign other (picker), unassign me, unassign others. E2E.
