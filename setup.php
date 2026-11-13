@@ -34,7 +34,7 @@ use GlpiPlugin\Ticketboost\Rights;
 
 // The version line is updated by the release tooling. Do not edit by hand.
 /** @phpstan-ignore theCodingMachineSafe.function (constants are defined once, at plugin load) */
-define('PLUGIN_TICKETBOOST_VERSION', '0.0.0'); // x-release-please-version
+define('PLUGIN_TICKETBOOST_VERSION', '0.1.0'); // x-release-please-version
 
 // Minimal GLPI version, inclusive.
 /** @phpstan-ignore theCodingMachineSafe.function (constants are defined once, at plugin load) */
