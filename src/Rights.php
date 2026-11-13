@@ -55,12 +55,21 @@ final class Rights
 
     public static function canUse(): bool
     {
-        return (bool) Session::haveRight(self::NAME, READ);
+        return self::has(self::NAME, READ);
     }
 
     public static function canConfigure(): bool
     {
-        return (bool) Session::haveRight(self::NAME, UPDATE);
+        return self::has(self::NAME, UPDATE);
+    }
+
+    /**
+     * Normalises Session::haveRight(), which returns the masked right (an int) in GLPI 11 and a
+     * bool in GLPI 12.
+     */
+    public static function has(string $rightname, int $right): bool
+    {
+        return 0 !== (int) Session::haveRight($rightname, $right);
     }
 
     /**

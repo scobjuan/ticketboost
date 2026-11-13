@@ -87,6 +87,7 @@ that become false. Format: `path` `signature` - purpose.
 - Self-service (`helpdesk`) profiles lose every right not in `Profile::$helpdesk_rights`
   when the session loads (`Profile::cleanProfile`): add plugin rights to it (ADR 0018).
 - `Session::haveRight()` returns an int in GLPI 11 and a bool in 12: never use `=== true`.
+  A `(bool)` cast is removed by Rector on 12 and required by PHPStan on 11: use `Rights::has()`.
   Rector removes `(bool)` casts because the 12 stubs say bool; type the values `bool|int`.
 - `DBmysql::tableExists($t)` caches per request: pass `false` as second argument after DDL.
 - Plugin endpoints are served at `/plugins/ticketboost/ajax/x.php` and the bundle at
