@@ -82,9 +82,9 @@ final class LocalesTest extends TestCase
         $es  = $this->entries('es_ES.po');
 
         foreach ($this->msgidsInCode() as $msgid) {
-            $this->assertArrayHasKey($msgid, $pot, "Missing in ticketboost.pot: $msgid");
-            $this->assertSame($msgid, $en[$msgid] ?? null, "en_GB must repeat the English text: $msgid");
-            $this->assertNotSame('', $es[$msgid] ?? '', "Untranslated in es_ES: $msgid");
+            $this->assertArrayHasKey($msgid, $pot, 'Missing in ticketboost.pot: ' . $msgid);
+            $this->assertSame($msgid, $en[$msgid] ?? null, 'en_GB must repeat the English text: ' . $msgid);
+            $this->assertNotSame('', $es[$msgid] ?? '', 'Untranslated in es_ES: ' . $msgid);
         }
     }
 }
