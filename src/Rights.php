@@ -55,12 +55,12 @@ final class Rights
 
     public static function canUse(): bool
     {
-        return Session::haveRight(self::NAME, READ);
+        return (bool) Session::haveRight(self::NAME, READ);
     }
 
     public static function canConfigure(): bool
     {
-        return Session::haveRight(self::NAME, UPDATE);
+        return (bool) Session::haveRight(self::NAME, UPDATE);
     }
 
     /**

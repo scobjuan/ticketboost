@@ -61,7 +61,7 @@ final class ProfileTab extends CommonGLPI
         $profiles_id = (int) $item->getID();
         $rights      = ProfileRight::getProfileRights($profiles_id, [Rights::NAME]);
         $flags       = Rights::toFlags(Rights::toInt($rights[Rights::NAME] ?? 0));
-        $can_edit    = Session::haveRight(Profile::$rightname, UPDATE);
+        $can_edit    = (bool) Session::haveRight(Profile::$rightname, UPDATE);
 
         echo self::render($profiles_id, $flags, $can_edit);
 
