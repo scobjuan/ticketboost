@@ -28,11 +28,13 @@ Decisions go to `.agents/decisions/`, reusable knowledge to `.agents/KNOWLEDGE.m
 
 ## In progress (max 10)
 
-- `feat/navigation`: waiting for owner approval to push and open the PR.
+- `feat/navigation`: owner approved push and PR, but the push was rejected: the `gh` token lacks the
+  `workflow` scope (the branch edits `.github/workflows/ci.yml`).
 
 ## Next steps (max 20)
 
-1. Ask the owner to approve pushing `feat/navigation` and opening the PR; after CI is green
+1. Owner runs `gh auth refresh -h github.com -s workflow`; then push `feat/navigation` over HTTPS
+   and open the PR (approval already given); after CI is green
    and the owner approves, squash-merge. If the seed fails on CI, check `e2e/seed/seed.php`.
 2. Phase 4 - assignment (PLAN.md section 8): `assign_me`, `assign_other` (picker),
    `unassign_me`, `unassign_others`, `ajax/action.php` (POST) and `ajax/search.php`. The first
@@ -47,7 +49,7 @@ Decisions go to `.agents/decisions/`, reusable knowledge to `.agents/KNOWLEDGE.m
 
 ## Blockers and waiting on owner (max 10)
 
-- Approval to push `feat/navigation` and open its PR (after the checks pass).
+- Owner must run `gh auth refresh -h github.com -s workflow` so the push can include the workflow change.
 - Branch protection on `main` is still not active (rulesets `[]` on 2026-11-12).
 
 ## Open questions (max 10)
@@ -88,3 +90,4 @@ Decisions go to `.agents/decisions/`, reusable knowledge to `.agents/KNOWLEDGE.m
 ## ADR index
 
 - See `.agents/decisions/README.md`.
+- 2026-11-12 Owner approved the push; rejected for missing `workflow` scope. Stopped at: owner refreshing the gh token. Next: "Next steps" 1.
