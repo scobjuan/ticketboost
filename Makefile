@@ -6,7 +6,7 @@ GLPI_URLS ?= http://localhost:8011 http://localhost:8012
 PLAYWRIGHT_VERSION ?= $(shell node -p "require('@playwright/test/package.json').version" 2>/dev/null)
 
 .PHONY: help install up down reset logs install-plugin build locales lint lint-ts lint-php \
-	typecheck test test-ts test-php test-php11 test-php12 e2e e2e-ui e2e-container size agents-check docs \
+	typecheck fix-php test test-ts test-php test-php11 test-php12 e2e e2e-ui e2e-container size agents-check docs \
 	check release-dry clean
 
 help: ## List targets
@@ -49,6 +49,9 @@ typecheck: ## TypeScript type check
 
 lint-php: ## PHP lint, php-cs-fixer, PHPStan and Rector (GLPI 12 image)
 	$(COMPOSE) --profile tools run --rm -e STEPS=lint tools12
+
+fix-php: ## Apply Rector and php-cs-fixer fixes (GLPI 12 image)
+	$(COMPOSE) --profile tools run --rm --entrypoint bash tools12 -c 'composer install -q --no-interaction >/dev/null 2>&1; php ../../vendor/bin/rector process; PHP_CS_FIXER_IGNORE_ENV=1 php ../../vendor/bin/php-cs-fixer fix --config=.php-cs-fixer.php --no-interaction --show-progress=none'
 
 test: test-ts test-php ## All unit tests with coverage gates
 

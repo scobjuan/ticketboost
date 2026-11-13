@@ -15,6 +15,8 @@ and an update of that section.
 3. PHP (from Phase 2 structure):
    - class in `src/Action/` implementing `ActionInterface`; register it in `ActionRegistry`
    - authorization: plugin right + native right on the item, checked server-side
+   - add its id to `ActionAvailability::IMPLEMENTED` and its rights rule to
+     `ActionAvailability::fromCapabilities()` (the panel offers nothing else)
    - only native GLPI classes; no raw SQL
    - PHPUnit: success, missing right, wrong entity, invalid input
 4. TypeScript: action entry in `frontend/src/actions/`, default binding in the keymap,

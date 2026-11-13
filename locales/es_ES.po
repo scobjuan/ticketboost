@@ -20,3 +20,111 @@ msgstr "TicketBoost"
 
 msgid "Keyboard shortcuts for faster ticket handling in GLPI"
 msgstr "Atajos de teclado para gestionar tickets más rápido en GLPI"
+
+msgid "All shortcuts"
+msgstr "Todos los atajos"
+
+msgid "Search..."
+msgstr "Buscar..."
+
+msgid "No results"
+msgstr "Sin resultados"
+
+msgid "The search failed"
+msgstr "La búsqueda ha fallado"
+
+msgid "all shortcuts"
+msgstr "todos los atajos"
+
+msgid "close"
+msgstr "cerrar"
+
+msgid "back"
+msgstr "volver"
+
+msgid "select"
+msgstr "seleccionar"
+
+msgid "mark"
+msgstr "marcar"
+
+msgid "confirm"
+msgstr "confirmar"
+
+msgid "Navigate"
+msgstr "Navegar"
+
+msgid "Assign"
+msgstr "Asignar"
+
+msgid "Ticket"
+msgstr "Ticket"
+
+msgid "General"
+msgstr "General"
+
+msgid "Next ticket"
+msgstr "Ticket siguiente"
+
+msgid "Previous ticket"
+msgstr "Ticket anterior"
+
+msgid "Back to the list"
+msgstr "Volver a la lista"
+
+msgid "My tickets"
+msgstr "Mis tickets"
+
+msgid "Assign to me"
+msgstr "Asignarme"
+
+msgid "Assign to someone else"
+msgstr "Asignar a otra persona"
+
+msgid "Unassign me"
+msgstr "Quitarme la asignación"
+
+msgid "Unassign others"
+msgstr "Quitar la asignación de otros"
+
+msgid "Change status"
+msgstr "Cambiar el estado"
+
+msgid "Close ticket"
+msgstr "Cerrar el ticket"
+
+msgid "Add a followup"
+msgstr "Añadir un seguimiento"
+
+msgid "Add a task"
+msgstr "Añadir una tarea"
+
+msgid "Change priority"
+msgstr "Cambiar la prioridad"
+
+msgid "Show all shortcuts"
+msgstr "Mostrar todos los atajos"
+
+msgid "The action failed"
+msgstr "La acción ha fallado"
+
+msgid "Authentication required"
+msgstr "Se requiere autenticación"
+
+msgid "Method not allowed"
+msgstr "Método no permitido"
+
+msgid "Invalid request"
+msgstr "Solicitud no válida"
+
+msgid "You are not allowed to do this"
+msgstr "No tiene permiso para hacer esto"
+
+msgid "TicketBoost preferences"
+msgstr "Preferencias de TicketBoost"
+
+msgid "Use the keyboard shortcuts"
+msgstr "Usar los atajos de teclado"
+
+msgid "Configure TicketBoost"
+msgstr "Configurar TicketBoost"

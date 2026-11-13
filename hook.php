@@ -28,12 +28,17 @@
  * -------------------------------------------------------------------------
  */
 
+use GlpiPlugin\Ticketboost\Install\Installer;
+
 /**
  * Plugin install process.
  */
 function plugin_ticketboost_install(): bool
 {
-    return true;
+    /** @var DBmysql $DB */
+    global $DB;
+
+    return (new Installer($DB))->install();
 }
 
 /**
@@ -41,5 +46,8 @@ function plugin_ticketboost_install(): bool
  */
 function plugin_ticketboost_uninstall(): bool
 {
-    return true;
+    /** @var DBmysql $DB */
+    global $DB;
+
+    return (new Installer($DB))->uninstall();
 }
