@@ -107,7 +107,7 @@ final class BootstrapTest extends DbTestCase
         $payload = Payload::forCurrentUser();
 
         $this->assertTrue($payload['enabled']);
-        $this->assertSame(['help'], $payload['available']);
+        $this->assertSame(['next', 'previous', 'list', 'my_tickets', 'help'], $payload['available']);
         $this->assertSame(ActionCatalog::defaultKeymap(), $payload['keymap']);
         $this->assertSame('Control', $payload['leader']['key']);
         $this->assertArrayHasKey('ui.title', $payload['labels']);

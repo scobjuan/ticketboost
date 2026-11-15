@@ -7,7 +7,7 @@ below with the user session. Every request is authorized again on the server.
 | -------------------- | ------ | ------- | ------------------------------------------------------------------------- |
 | `ajax/bootstrap.php` | GET    | Ready   | Effective leader, keymap, available actions and translated labels         |
 | `ajax/action.php`    | POST   | Planned | Runs an action on a ticket                                                |
-| `ajax/navigate.php`  | GET    | Planned | Next, previous or list URL                                                |
+| `ajax/navigate.php`  | GET    | Ready   | Address to open for next, previous, list or my tickets                    |
 | `ajax/search.php`    | GET    | Planned | Technicians and groups that can be assigned                               |
 
 Responses are JSON: `{"ok": true, "message": "...", "data": {}, "redirect": "..."}`.
@@ -52,3 +52,20 @@ session token in the `X-Glpi-Csrf-Token` header on POST requests, and GLPI 12 va
 user overrides. A layer that would leave the keymap with an invalid or conflicting
 binding is ignored as a whole. `available` only lists actions that exist in the installed
 version and that the profile may use; the page decides which of them apply to it.
+
+## Navigation
+
+`ajax/navigate.php?to=<target>[&id=<ticket>]` computes the address to open and answers it
+in `redirect`; the browser does the move and GLPI checks the right on the ticket when the
+page loads. It is read-only, so it needs no CSRF token.
+
+| `to`         | `id`     | Result                                                                  |
+| ------------ | -------- | ----------------------------------------------------------------------- |
+| `next`       | required | The ticket after `id`; after the last one, the first                    |
+| `previous`   | required | The ticket before `id`; before the first one, the last                  |
+| `list`       | optional | The ticket list, with the last search restored by GLPI                  |
+| `my_tickets` | optional | The ticket list filtered to the tickets assigned to the user (technician) or requested by the user (self-service) |
+
+Any other `to` value, an unknown parameter or an `id` that is not a positive integer is
+answered with 400. When there is no other ticket the answer is 404 with a translated
+message. Tickets the user cannot open are skipped.

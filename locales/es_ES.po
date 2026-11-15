@@ -120,6 +120,12 @@ msgstr "Solicitud no válida"
 msgid "You are not allowed to do this"
 msgstr "No tiene permiso para hacer esto"
 
+msgid "There is no other ticket to go to"
+msgstr "No hay otro ticket al que ir"
+
+msgid "There was no result list, so you are moving through your unresolved tickets"
+msgstr "No había una lista de resultados, así que te mueves por tus tickets sin resolver"
+
 msgid "TicketBoost preferences"
 msgstr "Preferencias de TicketBoost"
 

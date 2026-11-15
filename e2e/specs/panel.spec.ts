@@ -1,15 +1,8 @@
-import { expect, type Page, test } from '@playwright/test'
+import { expect, test } from '@playwright/test'
 
-import { login } from '../support/glpi'
+import { login, waitForPanel } from '../support/glpi'
 
 const BOOTSTRAP = '/plugins/ticketboost/ajax/bootstrap.php'
-
-async function waitForPanel(page: Page): Promise<void> {
-  await expect(page.locator('html')).toHaveAttribute(
-    'data-ticketboost-panel',
-    'ready'
-  )
-}
 
 test('tapping Ctrl opens the panel, ? lists the shortcuts and Esc closes it', async ({
   page
@@ -31,7 +24,8 @@ test('tapping Ctrl opens the panel, ? lists the shortcuts and Esc closes it', as
   await expect(panel.locator('.tb-modal__title')).toHaveText(
     'TicketBoost / All shortcuts'
   )
-  await expect(panel.locator('.tb-key').first()).toHaveText('?')
+  await expect(panel.locator('.tb-key').first()).toHaveText('M')
+  await expect(panel.locator('.tb-key', { hasText: '?' })).toBeVisible()
 
   await page.keyboard.press('Escape')
   await expect(panel.locator('.tb-modal__title')).toHaveText('TicketBoost')
@@ -85,7 +79,13 @@ test('the bootstrap endpoint answers an authenticated AJAX request', async ({
   }
   expect(body.ok).toBe(true)
   expect(body.data.enabled).toBe(true)
-  expect(body.data.available).toEqual(['help'])
+  expect(body.data.available).toEqual([
+    'next',
+    'previous',
+    'list',
+    'my_tickets',
+    'help'
+  ])
   expect(body.data.leader.key).toBe('Control')
   expect(body.data.keymap.next).toEqual(['KeyN', 'ArrowRight'])
   expect(body.data.labels['ui.title']).toBe('TicketBoost')

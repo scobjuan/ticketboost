@@ -27,6 +27,8 @@ duration of a task.
 ## Which list do next and previous use?
 
 The same list GLPI uses for its own previous/next arrows: the result of your last
-search or ticket view. If you opened the ticket from a link or a notification and there
-is no list yet, TicketBoost uses your unresolved tickets, ordered by priority and then
-by date, and tells you so.
+search. If the ticket is not in that list, or you opened it from a link or a notification
+and there is no list yet, TicketBoost walks your unresolved tickets (assigned to you; in
+self-service, requested by you), most urgent first, and a notice says so on the page that
+opens. Tickets you cannot open are skipped. When there is no other ticket to go to, a
+message says so.

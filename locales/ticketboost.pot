@@ -117,6 +117,12 @@ msgstr ""
 msgid "You are not allowed to do this"
 msgstr ""
 
+msgid "There is no other ticket to go to"
+msgstr ""
+
+msgid "There was no result list, so you are moving through your unresolved tickets"
+msgstr ""
+
 msgid "TicketBoost preferences"
 msgstr ""
 
