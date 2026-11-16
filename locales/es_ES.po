@@ -134,3 +134,39 @@ msgstr "Usar los atajos de teclado"
 
 msgid "Configure TicketBoost"
 msgstr "Configurar TicketBoost"
+
+msgid "The ticket does not exist or you cannot see it"
+msgstr "El ticket no existe o no tienes permiso para verlo"
+
+msgid "The ticket is closed or deleted"
+msgstr "El ticket está cerrado o eliminado"
+
+msgid "You are already assigned to this ticket"
+msgstr "Ya estás asignado a este ticket"
+
+msgid "The ticket is now assigned to you"
+msgstr "El ticket ahora está asignado a ti"
+
+msgid "That user or group cannot be assigned to this ticket"
+msgstr "Ese usuario o grupo no puede asignarse a este ticket"
+
+msgid "It is already assigned to this ticket"
+msgstr "Ya está asignado a este ticket"
+
+msgid "The ticket was assigned"
+msgstr "El ticket fue asignado"
+
+msgid "You are not assigned to this ticket"
+msgstr "No estás asignado a este ticket"
+
+msgid "You are no longer assigned to the ticket"
+msgstr "Ya no estás asignado al ticket"
+
+msgid "One of the selected assignees is not assigned to this ticket"
+msgstr "Uno de los asignados seleccionados ya no está asignado a este ticket"
+
+msgid "The selected assignees were removed"
+msgstr "Se quitaron los asignados seleccionados"
+
+msgid "The change could not be saved"
+msgstr "No se pudo guardar el cambio"

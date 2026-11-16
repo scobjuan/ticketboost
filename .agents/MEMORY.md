@@ -1,55 +1,52 @@
 # Project memory (max 250 lines, prune every session)
 
-Updated: 2026-11-12 | Version: unreleased (target 0.1.0) | Phase: 2 merged, Phase 3 next
+Updated: 2026-11-15 | Version: unreleased (target 0.1.0) | Phase: 3 merged, Phase 4 in progress
 
 Live state for the next session. Keep it short and current; git keeps the history.
 Decisions go to `.agents/decisions/`, reusable knowledge to `.agents/KNOWLEDGE.md`.
 
 ## Current state (max 20)
 
-- `main` at `d7e8df8` (Phases 0, 1 and 2 merged, PRs #4 to #7). Release PR #3
+- `main` at `8b4f7cd` (Phases 0 to 3 merged, PRs #4 to #8). Release PR #3
   `chore(main): release 0.1.0` stays open: do NOT merge it before Phase 7.
-- Phase 3 (navigation) is implemented and committed on `feat/navigation` (3 local commits), NOT pushed yet:
-  `ajax/navigate.php` (GET, read-only, returns the URL in `redirect`), `Navigation\ListWalker`,
-  `NavigationRequest`, `Navigator`; actions `next`, `previous`, `list`, `my_tickets` are in
-  `ActionAvailability::IMPLEMENTED`; frontend `actions/handlers.ts` replaced the throwing `run`;
-  seed data (`e2e/seed/seed.php`, `make seed`, CI step); e2e `navigation.spec.ts`; docs updated.
-- Fallback without a result list follows ADR 0004: the user's unresolved tickets (assigned for
-  technicians, requested for self-service), priority desc, date asc, with a notice through
-  `Session::addMessageAfterRedirect`.
-- Verified locally: PHPUnit 152 tests on GLPI 11 and 12 (99.4% lines), Vitest 259 tests (99%),
-  lint, bundle 8.1 KB of 15 KB gzip, e2e 15/15 on glpi11-chromium, glpi12-chromium,
-  glpi12-firefox and glpi12-webkit (`make e2e-container`). Not yet run: CI on a fresh database
-  (the seed creates tech1 and tech2 from scratch there).
-- ADR 0018 is `accepted` (no `ajax/context.php`; CSRF stays with the GLPI kernel).
+- Phase 3 (navigation) is merged; its fallback follows ADR 0004. ADR 0018 is `accepted`.
+- Phase 4 (assignment) is implemented on `feat/assignment` (local commits, NOT pushed):
+  `ajax/action.php` (POST, JSON body), `ajax/search.php` (GET), `src/Assignment/`; the four actions
+  are in `ActionAvailability::IMPLEMENTED`; `actions/handlers.ts` posts and searches; picker fix:
+  Enter does nothing while a search is pending (it chose from a stale list).
+- Rights as built: `assign_me`/`unassign_me` need update on the ticket (`assign_me` also assign or
+  own/steal); `assign_other`/`unassign_others` need assign. The seeded `tech` has own but not
+  assign, so it only gets `assign_me`/`unassign_me` (e2e covers it).
+- Verified locally: PHPUnit 224 tests on GLPI 11 and 12 (98.7%), Vitest 273 (99%), lint, bundle
+  8.3 of 15 KB gzip, `assignment.spec.ts` green on glpi11-chromium, glpi12-chromium, glpi12-firefox;
+  the CSRF spec proves a forged POST is refused on both versions (ADR 0018).
 - Use `Rights::has()` for `Session::haveRight()` (int in GLPI 11, bool in 12).
 - Commits must not carry `Co-Authored-By` trailers (RULES.md); commit scopes are limited to
-  the commitlint list.
+  the commitlint list. The `gh` token has the `workflow` scope (2026-11-15).
 
 ## In progress (max 10)
 
-- `feat/navigation`: owner approved push and PR, but the push was rejected: the `gh` token lacks the
-  `workflow` scope (the branch edits `.github/workflows/ci.yml`).
+- `feat/assignment`: Phase 4 done and committed locally; waiting for owner approval to push and open the PR.
 
 ## Next steps (max 20)
 
-1. Owner runs `gh auth refresh -h github.com -s workflow`; then push `feat/navigation` over HTTPS
-   and open the PR (approval already given); after CI is green
-   and the owner approves, squash-merge. If the seed fails on CI, check `e2e/seed/seed.php`.
-2. Phase 4 - assignment (PLAN.md section 8): `assign_me`, `assign_other` (picker),
-   `unassign_me`, `unassign_others`, `ajax/action.php` (POST) and `ajax/search.php`. The first
-   POST endpoint must ship the e2e spec that proves a POST without CSRF protection is refused
-   on GLPI 11 and 12 (ADR 0018); `navigate.php` is GET and needs none.
+1. Owner approves the push of `feat/assignment`; push over HTTPS and open the PR; after CI is green and
+   the owner approves, squash-merge.
+2. Phase 5 - ticket actions (PLAN.md section 8): `change_status` (submenu), `close` (both modes,
+   ADR 0006), `change_priority` (submenu), `followup` / `task` editor focus. They need `options` in the
+   bootstrap payload (`SubmenuOption`) and the same POST endpoint `ajax/action.php`; generalize
+   `AssignmentRequest` or add a sibling request class.
 3. Phase 6 reminder: key recorder and conflict UI use `KeymapResolver::issues()`; admin
    page needs `front/config.form.php` and the `config_page` hook (not registered yet).
 4. Check how the bundle behaves on the login page (it loads there; bootstrap answers 401
    and the panel stays `off`): decide whether to skip the request when there is no session.
 5. Verify branch protection on `main` once the owner saves it:
    `gh api repos/scobjuan/ticketboost/rulesets` must list an active ruleset.
+6. The e2e "self-service user only walks their own tickets" timed out once on glpi11-chromium under
+   load and passed alone: watch it for flakiness.
 
 ## Blockers and waiting on owner (max 10)
 
-- Owner must run `gh auth refresh -h github.com -s workflow` so the push can include the workflow change.
 - Branch protection on `main` is still not active (rulesets `[]` on 2026-11-12).
 
 ## Open questions (max 10)
@@ -86,8 +83,9 @@ Decisions go to `.agents/decisions/`, reusable knowledge to `.agents/KNOWLEDGE.m
   `docs/accept-adr-0018`. Stopped at: owner approval to push it. Next: "Next steps" 1.
 - 2026-11-12 Phase 2 follow-ups merged (PR #6 fixes, PR #7 ADR 0018 accepted). Phase 3 implemented
   on `feat/navigation` (see Current state). Stopped at: owner approval to push `feat/navigation`.
+- 2026-11-15 Token refreshed, PR #8 (Phase 3) green on CI and squash-merged as `8b4f7cd`. Phase 4 implemented on
+  `feat/assignment` with the stale-picker fix. Stopped at: owner approval to push. Next: "Next steps" 1.
 
 ## ADR index
 
 - See `.agents/decisions/README.md`.
-- 2026-11-12 Owner approved the push; rejected for missing `workflow` scope. Stopped at: owner refreshing the gh token. Next: "Next steps" 1.

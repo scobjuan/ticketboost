@@ -134,3 +134,39 @@ msgstr "Use the keyboard shortcuts"
 
 msgid "Configure TicketBoost"
 msgstr "Configure TicketBoost"
+
+msgid "The ticket does not exist or you cannot see it"
+msgstr "The ticket does not exist or you cannot see it"
+
+msgid "The ticket is closed or deleted"
+msgstr "The ticket is closed or deleted"
+
+msgid "You are already assigned to this ticket"
+msgstr "You are already assigned to this ticket"
+
+msgid "The ticket is now assigned to you"
+msgstr "The ticket is now assigned to you"
+
+msgid "That user or group cannot be assigned to this ticket"
+msgstr "That user or group cannot be assigned to this ticket"
+
+msgid "It is already assigned to this ticket"
+msgstr "It is already assigned to this ticket"
+
+msgid "The ticket was assigned"
+msgstr "The ticket was assigned"
+
+msgid "You are not assigned to this ticket"
+msgstr "You are not assigned to this ticket"
+
+msgid "You are no longer assigned to the ticket"
+msgstr "You are no longer assigned to the ticket"
+
+msgid "One of the selected assignees is not assigned to this ticket"
+msgstr "One of the selected assignees is not assigned to this ticket"
+
+msgid "The selected assignees were removed"
+msgstr "The selected assignees were removed"
+
+msgid "The change could not be saved"
+msgstr "The change could not be saved"

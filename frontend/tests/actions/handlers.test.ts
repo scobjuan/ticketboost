@@ -1,9 +1,12 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import {
+  ACTION_ENDPOINT,
   createActionHandlers,
   NAVIGATE_ENDPOINT,
-  sameOriginUrl
+  pickerItems,
+  sameOriginUrl,
+  SEARCH_ENDPOINT
 } from '../../src/actions/handlers'
 import type { Api, ApiEnvelope } from '../../src/api/client'
 import { setPageUrl } from '../support/page'
@@ -14,8 +17,11 @@ function fakeApi(envelope: Partial<ApiEnvelope> | Error) {
       ? Promise.reject(envelope)
       : Promise.resolve({ ok: true, message: '', data: null, ...envelope })
   )
-  const api = { get: calls, post: vi.fn() } as unknown as Api
-  return Object.assign(api, { calls })
+  const posts = vi.fn<(endpoint: string, body: unknown) => Promise<unknown>>(
+    () => calls('')
+  )
+  const api = { get: calls, post: posts } as unknown as Api
+  return Object.assign(api, { calls, posts })
 }
 
 describe('sameOriginUrl', () => {
@@ -127,9 +133,84 @@ describe('createActionHandlers', () => {
     const api = fakeApi({})
 
     await expect(
-      createActionHandlers(document, api, vi.fn()).run('assign_me')
+      createActionHandlers(document, api, vi.fn()).run('change_status')
     ).rejects.toThrow('not available yet')
     expect(api.calls).not.toHaveBeenCalled()
+    expect(api.posts).not.toHaveBeenCalled()
+  })
+
+  it.each([
+    ['assign_me', undefined, { action: 'assign_me', id: 7 }],
+    ['unassign_me', undefined, { action: 'unassign_me', id: 7 }],
+    [
+      'assign_other',
+      'user:3',
+      { action: 'assign_other', id: 7, value: 'user:3' }
+    ],
+    [
+      'unassign_others',
+      ['user:3', 'group:2'],
+      { action: 'unassign_others', id: 7, value: ['user:3', 'group:2'] }
+    ]
+  ] as const)('posts %s and reloads the ticket', async (id, value, body) => {
+    const api = fakeApi({ redirect: '/front/ticket.form.php?id=7' })
+    const navigate = vi.fn()
+
+    await createActionHandlers(document, api, navigate).run(id, value)
+
+    expect(api.posts).toHaveBeenCalledWith(ACTION_ENDPOINT, body)
+    expect(navigate).toHaveBeenCalledWith(
+      'http://localhost/front/ticket.form.php?id=7'
+    )
+  })
+
+  it('shows the refusal of an assignment and does not reload', async () => {
+    const api = fakeApi({ ok: false, message: 'You are already assigned' })
+    const navigate = vi.fn()
+
+    await createActionHandlers(document, api, navigate).run('assign_me')
+
+    expect(document.querySelector('.tb-toast--error')?.textContent).toBe(
+      'You are already assigned'
+    )
+    expect(navigate).not.toHaveBeenCalled()
+  })
+
+  it('needs a ticket on screen to assign', async () => {
+    setPageUrl('http://localhost/front/ticket.php')
+    const api = fakeApi({ redirect: '/x' })
+
+    await expect(
+      createActionHandlers(document, api, vi.fn()).run('assign_me')
+    ).rejects.toThrow('needs a ticket on screen')
+    expect(api.posts).not.toHaveBeenCalled()
+  })
+
+  it('searches the people a picker offers', async () => {
+    const api = fakeApi({
+      data: [{ id: 'user:3', label: 'Ana', detail: 'User' }, { bad: true }]
+    })
+
+    const items = await createActionHandlers(document, api, vi.fn()).search?.(
+      'assign_other',
+      'an a'
+    )
+
+    expect(api.calls).toHaveBeenCalledWith(
+      `${SEARCH_ENDPOINT}?action=assign_other&id=7&q=an+a`
+    )
+    expect(items).toEqual([{ id: 'user:3', label: 'Ana', detail: 'User' }])
+  })
+
+  it('fails the search when the server refuses it', async () => {
+    const api = fakeApi({ ok: false, message: 'Not allowed' })
+
+    await expect(
+      createActionHandlers(document, api, vi.fn()).search?.(
+        'unassign_others',
+        ''
+      )
+    ).rejects.toThrow('Not allowed')
   })
 
   it('passes a network failure on to the caller', async () => {
@@ -159,5 +240,27 @@ describe('createActionHandlers', () => {
     await expect(createActionHandlers(doc, api).run('list')).rejects.toThrow(
       'did not give an address'
     )
+  })
+})
+
+describe('pickerItems', () => {
+  it('keeps well-formed entries, with or without a detail', () => {
+    expect(
+      pickerItems([
+        { id: 'user:1', label: 'Ana' },
+        { id: 'group:2', label: 'Support', detail: 'Group' }
+      ])
+    ).toEqual([
+      { id: 'user:1', label: 'Ana' },
+      { id: 'group:2', label: 'Support', detail: 'Group' }
+    ])
+  })
+
+  it.each([
+    ['not a list', { id: 'user:1' }],
+    ['null', null],
+    ['entries of the wrong shape', [null, 'x', { id: 1, label: 'a' }, {}]]
+  ])('returns nothing for %s', (_name, data) => {
+    expect(pickerItems(data)).toEqual([])
   })
 })

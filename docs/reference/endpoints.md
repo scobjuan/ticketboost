@@ -6,9 +6,9 @@ below with the user session. Every request is authorized again on the server.
 | Endpoint             | Method | Status  | Purpose                                                                   |
 | -------------------- | ------ | ------- | ------------------------------------------------------------------------- |
 | `ajax/bootstrap.php` | GET    | Ready   | Effective leader, keymap, available actions and translated labels         |
-| `ajax/action.php`    | POST   | Planned | Runs an action on a ticket                                                |
+| `ajax/action.php`    | POST   | Ready   | Runs an assignment action on a ticket (status and priority follow)        |
 | `ajax/navigate.php`  | GET    | Ready   | Address to open for next, previous, list or my tickets                    |
-| `ajax/search.php`    | GET    | Planned | Technicians and groups that can be assigned                               |
+| `ajax/search.php`    | GET    | Ready   | Users and groups that can be assigned, or the current assignees           |
 
 Responses are JSON: `{"ok": true, "message": "...", "data": {}, "redirect": "..."}`.
 They are never cached.
@@ -69,3 +69,29 @@ page loads. It is read-only, so it needs no CSRF token.
 Any other `to` value, an unknown parameter or an `id` that is not a positive integer is
 answered with 400. When there is no other ticket the answer is 404 with a translated
 message. Tickets the user cannot open are skipped.
+
+## Assignment actions
+
+`ajax/action.php` takes a JSON body `{"action": "...", "id": <ticket>, "value": ...}`. It is
+a state-changing POST, so GLPI refuses it unless it passes its own CSRF check (the session
+token header in GLPI 11, `Sec-Fetch-Site` and `Origin` in GLPI 12). Unknown actions and
+unknown keys are answered with 400.
+
+| `action`          | `value`                                   | Native right checked on the ticket                  |
+| ----------------- | ----------------------------------------- | --------------------------------------------------- |
+| `assign_me`       | none                                      | update, and assign or own/steal                     |
+| `assign_other`    | `"user:<id>"` or `"group:<id>"`           | assign; the user must be able to own tickets in the entity of the ticket and active, the group assignable and visible there |
+| `unassign_me`     | none                                      | update                                              |
+| `unassign_others` | list of up to 50 `"user:<id>"`/`"group:<id>"` | assign; every entry must be assigned now, none may be the current user |
+
+The change goes through the native `Ticket_User` and `Group_Ticket` classes. On success the
+answer carries the ticket address in `redirect` and GLPI shows the message on the reloaded
+page. Statuses: 404 when the ticket does not exist or cannot be seen (the same answer for
+both), 403 without the right, 409 when the ticket is closed or deleted or the change is a
+no-op (already assigned, not assigned), 400 for an assignee that cannot be assigned.
+`unassign_others` is all or nothing: if one entry is not assigned, nothing is removed.
+
+`ajax/search.php?action=<assign_other|unassign_others>&id=<ticket>[&q=<text>]` returns
+`data` as a list of `{"id": "user:3", "label": "...", "detail": "..."}`: at most 10 users
+and 10 groups for `assign_other` (already assigned ones left out), every assignee but the
+current user for `unassign_others`. It needs the right to assign on the ticket.

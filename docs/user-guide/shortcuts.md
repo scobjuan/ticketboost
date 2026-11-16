@@ -32,3 +32,23 @@ and there is no list yet, TicketBoost walks your unresolved tickets (assigned to
 self-service, requested by you), most urgent first, and a notice says so on the page that
 opens. Tickets you cannot open are skipped. When there is no other ticket to go to, a
 message says so.
+
+## Assigning
+
+These actions work on the ticket you have open and reload it when they finish, so the
+timeline and the assignees are up to date. GLPI does the work (status, history and
+notifications behave as in the ticket form) and a notice says what happened.
+
+| Action | What it does                                                                                              |
+| ------ | --------------------------------------------------------------------------------------------------------- |
+| ++a++  | Assigns the ticket to you. A new ticket becomes _Processing (assigned)_                                   |
+| ++o++  | Opens a search box with the users who can own tickets in the entity of the ticket, and the assignable groups. ++enter++ assigns the selected one |
+| ++u++  | Removes you from the ticket                                                                               |
+| ++x++  | Lists the current assignees except you. ++enter++ marks or unmarks one, ++ctrl+enter++ removes the marked ones |
+
+Typing in a search box waits for the new results: ++enter++ does nothing until the list
+matches what you typed, so you never pick someone from an outdated list. People and groups
+already assigned are not offered again. Closed and deleted tickets cannot be changed.
+
+Which of these you see depends on your profile: assigning to others needs the GLPI right
+to assign tickets; assigning yourself needs the right to own or steal tickets.

@@ -1,11 +1,25 @@
-import type { Api } from '../api/client'
+import type { Api, ApiEnvelope } from '../api/client'
 import type { ActionHandlers } from '../app'
 import { ticketId } from '../context/detect'
 import type { ActionId } from '../keymap/catalog'
+import type { PickerItem } from '../ui/modal'
 import { showToast } from '../ui/toast'
 
 /** Endpoint, relative to the plugin `ajax/` directory, that resolves the navigation actions. */
 export const NAVIGATE_ENDPOINT = 'navigate.php'
+
+/** Endpoint that runs the state-changing actions. */
+export const ACTION_ENDPOINT = 'action.php'
+
+/** Endpoint that lists who the assignment pickers offer. */
+export const SEARCH_ENDPOINT = 'search.php'
+
+const ASSIGNMENT_ACTIONS: readonly ActionId[] = [
+  'assign_me',
+  'assign_other',
+  'unassign_me',
+  'unassign_others'
+]
 
 const NAVIGATION_ACTIONS: readonly ActionId[] = [
   'next',
@@ -34,9 +48,34 @@ export function sameOriginUrl(
 }
 
 /**
+ * Reads the people a picker offers from a search answer, dropping anything malformed.
+ * @param data The `data` of the search envelope.
+ * @returns The picker items.
+ */
+export function pickerItems(data: unknown): PickerItem[] {
+  if (!Array.isArray(data)) {
+    return []
+  }
+  const items: PickerItem[] = []
+  for (const entry of data as unknown[]) {
+    if (typeof entry !== 'object' || entry === null) {
+      continue
+    }
+    const { id, label, detail } = entry as Record<string, unknown>
+    if (typeof id === 'string' && typeof label === 'string') {
+      items.push(
+        typeof detail === 'string' ? { id, label, detail } : { id, label }
+      )
+    }
+  }
+  return items
+}
+
+/**
  * Creates the handlers that run the panel actions against the plugin endpoints.
- * Navigation actions ask the server for the address to open and then go there; a refusal
- * from the server is shown as a toast with its own translated message.
+ * Navigation actions ask the server for the address to open and then go there; assignment
+ * actions are posted and, once done, reload the ticket. A refusal from the server is shown
+ * as a toast with its own translated message.
  * @param doc The page document.
  * @param api Client for the plugin endpoints.
  * @param navigate Opens an address; defaults to a normal page navigation.
@@ -54,33 +93,62 @@ export function createActionHandlers(
       win?.location.assign(url)
     })
 
+  const currentTicket = (id: ActionId): number => {
+    const current = win ? ticketId(win.location) : null
+    if (current === null) {
+      throw new Error(`The action ${id} needs a ticket on screen`)
+    }
+    return current
+  }
+
+  const follow = (envelope: ApiEnvelope): void => {
+    if (!envelope.ok && envelope.message !== '') {
+      showToast(doc, envelope.message, 'error')
+      return
+    }
+    const url =
+      envelope.ok && envelope.redirect !== undefined && win
+        ? sameOriginUrl(win.location, envelope.redirect)
+        : null
+    if (url === null) {
+      throw new Error('The server did not give an address to open')
+    }
+    go(url)
+  }
+
   return {
-    run: async (id) => {
+    run: async (id, value) => {
+      if (ASSIGNMENT_ACTIONS.includes(id)) {
+        const body: Record<string, unknown> = {
+          action: id,
+          id: currentTicket(id)
+        }
+        if (value !== undefined) {
+          body.value = value
+        }
+        follow(await api.post(ACTION_ENDPOINT, body))
+        return
+      }
       if (!NAVIGATION_ACTIONS.includes(id)) {
         throw new Error(`The action ${id} is not available yet`)
       }
       const query = new URLSearchParams({ to: id })
       if (id === 'next' || id === 'previous') {
-        const current = win ? ticketId(win.location) : null
-        if (current === null) {
-          throw new Error(`The action ${id} needs a ticket on screen`)
-        }
-        query.set('id', String(current))
+        query.set('id', String(currentTicket(id)))
       }
-
-      const envelope = await api.get(`${NAVIGATE_ENDPOINT}?${query.toString()}`)
-      if (!envelope.ok && envelope.message !== '') {
-        showToast(doc, envelope.message, 'error')
-        return
+      follow(await api.get(`${NAVIGATE_ENDPOINT}?${query.toString()}`))
+    },
+    search: async (id, query) => {
+      const params = new URLSearchParams({
+        action: id,
+        id: String(currentTicket(id)),
+        q: query
+      })
+      const envelope = await api.get(`${SEARCH_ENDPOINT}?${params.toString()}`)
+      if (!envelope.ok) {
+        throw new Error(envelope.message)
       }
-      const url =
-        envelope.ok && envelope.redirect !== undefined && win
-          ? sameOriginUrl(win.location, envelope.redirect)
-          : null
-      if (url === null) {
-        throw new Error('The server did not give an address to open')
-      }
-      go(url)
+      return pickerItems(envelope.data)
     }
   }
 }
