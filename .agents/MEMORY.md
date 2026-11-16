@@ -1,47 +1,45 @@
 # Project memory (max 250 lines, prune every session)
 
-Updated: 2026-11-15 | Version: unreleased (target 0.1.0) | Phase: 3 merged, Phase 4 in progress
+Updated: 2026-11-16 | Version: unreleased (target 0.1.0) | Phase: 4 merged, Phase 5 implemented
 
 Live state for the next session. Keep it short and current; git keeps the history.
 Decisions go to `.agents/decisions/`, reusable knowledge to `.agents/KNOWLEDGE.md`.
 
 ## Current state (max 20)
 
-- `main` at `8b4f7cd` (Phases 0 to 3 merged, PRs #4 to #8). Release PR #3
+- `main` at `9ba1f26` (Phases 0 to 4 merged, PRs #4 to #9). Release PR #3
   `chore(main): release 0.1.0` stays open: do NOT merge it before Phase 7.
-- Phase 3 (navigation) is merged; its fallback follows ADR 0004. ADR 0018 is `accepted`.
-- Phase 4 (assignment) is implemented on `feat/assignment` (local commits, NOT pushed):
-  `ajax/action.php` (POST, JSON body), `ajax/search.php` (GET), `src/Assignment/`; the four actions
-  are in `ActionAvailability::IMPLEMENTED`; `actions/handlers.ts` posts and searches; picker fix:
-  Enter does nothing while a search is pending (it chose from a stale list).
-- Rights as built: `assign_me`/`unassign_me` need update on the ticket (`assign_me` also assign or
-  own/steal); `assign_other`/`unassign_others` need assign. The seeded `tech` has own but not
-  assign, so it only gets `assign_me`/`unassign_me` (e2e covers it).
-- Verified locally: PHPUnit 224 tests on GLPI 11 and 12 (98.7%), Vitest 273 (99%), lint, bundle
-  8.3 of 15 KB gzip, `assignment.spec.ts` green on glpi11-chromium, glpi12-chromium, glpi12-firefox;
-  the CSRF spec proves a forged POST is refused on both versions (ADR 0018).
+- Phase 3 (navigation) and Phase 4 (assignment) are merged; ADR 0004 and ADR 0018 apply.
+- Phase 4 built `ajax/action.php` (POST, JSON body), `ajax/search.php` (GET) and `src/Assignment/`.
+- Phase 5 (ticket actions) is implemented on `feat/ticket-actions` (local commits, NOT pushed):
+  `src/Ticketing/` (`TicketActions`, `TicketActionRequest`), `src/Action/ActionRouter.php` (the endpoint
+  dispatcher), `Bootstrap\Options` (status and priority choices) and `closeMode` in the payload; frontend
+  text view for the solution, `editor/compose.ts` for followup and task; all five actions are in
+  `IMPLEMENTED`. The server requires the central interface and checks each right on the ticket.
+- Close default is `quick_solution` (owner decision); the admin switch arrives with Phase 6.
+- Verified locally: PHPUnit 258 tests on GLPI 11 and 12 (98%), Vitest 300 (99%), lint, bundle 9.0 of
+  15 KB gzip; `ticket-actions.spec.ts` green on glpi11-chromium and glpi12-chromium.
 - Use `Rights::has()` for `Session::haveRight()` (int in GLPI 11, bool in 12).
 - Commits must not carry `Co-Authored-By` trailers (RULES.md); commit scopes are limited to
   the commitlint list. The `gh` token has the `workflow` scope (2026-11-15).
 
 ## In progress (max 10)
 
-- `feat/assignment`: Phase 4 done and committed locally; waiting for owner approval to push and open the PR.
+- `feat/ticket-actions`: Phase 5 done and committed locally; waiting for the full e2e run and owner approval to push.
 
 ## Next steps (max 20)
 
-1. Owner approves the push of `feat/assignment`; push over HTTPS and open the PR; after CI is green and
-   the owner approves, squash-merge.
-2. Phase 5 - ticket actions (PLAN.md section 8): `change_status` (submenu), `close` (both modes,
-   ADR 0006), `change_priority` (submenu), `followup` / `task` editor focus. They need `options` in the
-   bootstrap payload (`SubmenuOption`) and the same POST endpoint `ajax/action.php`; generalize
-   `AssignmentRequest` or add a sibling request class.
-3. Phase 6 reminder: key recorder and conflict UI use `KeymapResolver::issues()`; admin
+1. Push `feat/ticket-actions` and open the PR once the owner approves; after CI is green and the owner
+   approves, squash-merge.
+2. Phase 6 reminder: key recorder and conflict UI use `KeymapResolver::issues()`; admin
    page needs `front/config.form.php` and the `config_page` hook (not registered yet).
-4. Check how the bundle behaves on the login page (it loads there; bootstrap answers 401
+3. Check how the bundle behaves on the login page (it loads there; bootstrap answers 401
    and the panel stays `off`): decide whether to skip the request when there is no session.
-5. Verify branch protection on `main` once the owner saves it:
+4. Verify branch protection on `main` once the owner saves it:
    `gh api repos/scobjuan/ticketboost/rulesets` must list an active ruleset.
+5. Phase 6 must also: add the e2e for `close_mode = direct_close` (needs the admin page to set it; the
+   PHPUnit test and the Vitest app test already cover it), and decide on `SolutionTemplate` support for
+   the quick close (the plan mentions "text or template"; Phase 5 ships text only).
 6. The e2e "self-service user only walks their own tickets" timed out once on glpi11-chromium under
    load and passed alone: watch it for flakiness.
 
@@ -84,7 +82,10 @@ Decisions go to `.agents/decisions/`, reusable knowledge to `.agents/KNOWLEDGE.m
 - 2026-11-12 Phase 2 follow-ups merged (PR #6 fixes, PR #7 ADR 0018 accepted). Phase 3 implemented
   on `feat/navigation` (see Current state). Stopped at: owner approval to push `feat/navigation`.
 - 2026-11-15 Token refreshed, PR #8 (Phase 3) green on CI and squash-merged as `8b4f7cd`. Phase 4 implemented on
-  `feat/assignment` with the stale-picker fix. Stopped at: owner approval to push. Next: "Next steps" 1.
+  `feat/assignment` with the stale-picker fix; PR #9 green and squash-merged as `9ba1f26`.
+- 2026-11-16 Phase 5 implemented on `feat/ticket-actions`. Found on real GLPI: the followup editor must be
+  focused only after TinyMCE initializes; self-service reached the status check (now 403 first).
+  Stopped at: full e2e run, then owner approval to push. Next: "Next steps" 1.
 
 ## ADR index
 

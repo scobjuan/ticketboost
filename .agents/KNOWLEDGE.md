@@ -19,7 +19,7 @@ that become false. Format: `path` `signature` - purpose.
 - `api/client.ts` `createApi(doc, baseUrl, fetcher?)` (`get`, `post`), `csrfToken(doc)`, `ApiError` - plugin endpoint client; sends `X-Requested-With` and the GLPI 11 CSRF token.
 - `bootstrap.ts` `parseBootstrap(data): AppConfig | null` - validates the server payload (trust boundary); null disables the panel.
 - `context/detect.ts` `ticketId(location): number | null`, `detectContext(location)` - ticket form is `/front/ticket.form.php?id=N` on 11 and 12.
-- `actions/handlers.ts` `createActionHandlers(doc, api, navigate?)`, `sameOriginUrl(location, target)`, `NAVIGATE_ENDPOINT` - runs panel actions; navigation asks `navigate.php` and opens its `redirect` (same origin only); a refusal shows the server message as a toast. `run` also posts the assignment actions to `action.php` and reloads on `redirect`; `search(id, query)` feeds the pickers through `search.php`; `pickerItems(data)` validates the answer.
+- `actions/handlers.ts` `createActionHandlers(doc, api, navigate?)`, `sameOriginUrl(location, target)`, `NAVIGATE_ENDPOINT` - runs panel actions; navigation asks `navigate.php` and opens its `redirect` (same origin only); a refusal shows the server message as a toast. `run` also posts the assignment actions to `action.php` and reloads on `redirect`; `search(id, query)` feeds the pickers through `search.php`; `pickerItems(data)` validates the answer; followup and task are handled client side by `editor/compose.ts` `openComposer(doc, kind)` (opens GLPI's collapsed answer form through `window.bootstrap.Collapse`, waits for TinyMCE, focuses it).
 - `boot.ts` `startPanel(doc, api)`, `PANEL_ATTRIBUTE` (`data-ticketboost-panel` = `ready` | `off`, e2e waits on it), `BOOTSTRAP_ENDPOINT`.
 - `i18n/translate.ts` `createTranslator(labels)` - label lookup, falls back to the key.
 - `ui/modal.ts` `createModal(doc, t)` (`open`, `push`, `close`, `isOpen`, `handleKey`), views `MenuView` / `PickerView`, `SEARCH_DELAY_MS` - the panel.
@@ -43,11 +43,13 @@ that become false. Format: `path` `signature` - purpose.
 - `Bootstrap\ActionAvailability` `fromCapabilities()`, `forCurrentUser()`, `IMPLEMENTED`; `Bootstrap\Labels` `all()`; `Bootstrap\Payload` `build()`, `forCurrentUser()` - what `ajax/bootstrap.php` returns.
 - `Navigation\ListWalker` `step($ids, $current, $step, $accept)` (circular, skips unacceptable ids), `Navigation\NavigationRequest` `fromQuery()` (whitelist `to`/`id`), `Navigation\Navigator` `respond($query)`, `myTicketsUrl()` - behind `ajax/navigate.php` (GET, read-only: returns the URL in `redirect`).
 - `Assignment\Assigner` `respond($rawJson)` (the four assignment actions through `Ticket_User`/`Group_Ticket`, rights per ticket), `Assignment\ActorSearch` `respond($query)` (picker data), `Assignment\Assignees` `link()`, `current()`, `label()`, `assignable()`, `Assignment\Actor` (`user:N`/`group:N`), `AssignmentRequest::fromJson()`, `SearchRequest::fromQuery()` - behind `ajax/action.php` (POST, JSON body, 8 KB cap) and `ajax/search.php` (GET).
+- `Action\ActionRouter` `respond($rawJson)` - dispatches `ajax/action.php` by action name; `Ticketing\TicketActions` `respond()` (change status, priority, close), `TicketActionRequest::fromJson()`; `Bootstrap\Options` `all()` - submenu choices sent in the payload `options` (with `closeMode`).
 - `ProfileTab` `render()` - TicketBoost tab on the profile form; posts to `front/profile.form.php`.
 
 ### Tests and e2e
 
 - `tests/Integration/*` extend `Glpi\Tests\DbTestCase` (`login('tech', 'tech')`, transaction per test); `InstallerTest` uses plain `TestCase` because DDL commits.
+- `e2e/support/glpi.ts` `createTicket(page, title)` - creates a `[tb-e2e]` ticket through GLPI's form endpoint (token on 11, none on 12) so a spec can change or close it; use it instead of mutating seed tickets.
 - `shared/keymap-cases.json` - cases shared by Vitest and PHPUnit; change the grammar there first.
 - `e2e/support/glpi.ts` `login(page, user)`, `USERS` (`admin`, `tech`, `tech1`, `tech2`, `normal`, `selfservice`), `waitForPanel(page)`, `leaderThen(page, key)`, `openSeedList(page)` - log in, drive the panel, open the seeded list (it also fills GLPI's session list).
 - `e2e/seed/seed.php` (run by `make seed` / `scripts/glpi-seed.sh`, idempotent) - users `tech1`, `tech2` (Technician) and tickets `[tb-seed] 1-6`: 1-3 assigned to tech1, 4-5 to tech2; 1, 4, 6 requested by post-only.
@@ -139,6 +141,10 @@ that become false. Format: `path` `signature` - purpose.
   release job and adding vendor to the `scripts/build-release.sh` allowlist.
 
 ## Testing learnings
+
+- `ui/modal.ts` views: `menu`, `picker`, `text` (textarea, Ctrl+Enter submits); `app.ts` pushes the text view for `close` unless `closeMode` is `direct_close`.
+- GLPI answer area (same on 11 and 12): collapsed blocks `#new-ITILFollowup-block` and `#new-TicketTask-block`, `window.bootstrap.Collapse` and `window.tinymce` exist; the form loads on first open and its `textarea[name="content"]` has a generated id (followup uses `solution_content_*`). Focus the editor only after TinyMCE reports `initialized`.
+- The ticket form shows the status as a `select[name="status"]` (value is the numeric status); text matching is unreliable across 11 and 12.
 
 - Test helper methods must not be named `run`, `status`, `name` or other `TestCase` methods (final in PHPUnit): fatal compile error.
 - e2e on shared seed data: a test that mutates a seed ticket must restore it, because a failed run leaves it changed and breaks the next ones. Reset with a PHP script run as `www-data` in each container (`podman cp` then `podman exec -u www-data c php /tmp/x.php`).
