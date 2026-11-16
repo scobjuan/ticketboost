@@ -72,6 +72,8 @@ final class Labels
             'action.change_priority' => __('Change priority', 'ticketboost'),
             'action.help'            => __('Show all shortcuts', 'ticketboost'),
             'message.action_failed'  => __('The action failed', 'ticketboost'),
+            'ui.solution'            => __('Solution', 'ticketboost'),
+            'ui.solution_hint'       => __('Describe how the ticket was solved', 'ticketboost'),
         ];
     }
 }

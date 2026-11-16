@@ -18,6 +18,7 @@ function config(extra: Partial<AppConfig> = {}): AppConfig {
       'group.navigate': 'Navigate',
       'action.next': 'Next ticket',
       'action.change_status': 'Change status',
+      'action.close': 'Close ticket',
       'message.action_failed': 'The action failed'
     },
     options: {
@@ -157,6 +158,34 @@ describe('startApp', () => {
     await vi.advanceTimersByTimeAsync(0)
 
     expect(run).toHaveBeenCalledWith('change_status', '2')
+  })
+
+  it('asks for the solution before closing in the default mode', async () => {
+    startApp(document, config(), handlers)
+    tapControl(document)
+
+    press({ key: 'c', code: 'KeyC' })
+    expect(title()).toBe('TicketBoost / Close ticket')
+    expect(run).not.toHaveBeenCalled()
+    const field = document.querySelector<HTMLTextAreaElement>('.tb-text__input')
+    expect(field).not.toBeNull()
+    field!.value = 'Replaced the cable'
+    press({ key: 'Enter', ctrlKey: true })
+    await vi.advanceTimersByTimeAsync(0)
+
+    expect(run).toHaveBeenCalledWith('close', 'Replaced the cable')
+    expect(isOpen()).toBe(false)
+  })
+
+  it('closes straight away when the administrator chose a direct close', async () => {
+    startApp(document, config({ closeMode: 'direct_close' }), handlers)
+    tapControl(document)
+
+    press({ key: 'c', code: 'KeyC' })
+    await vi.advanceTimersByTimeAsync(0)
+
+    expect(run).toHaveBeenCalledWith('close', undefined)
+    expect(document.querySelector('.tb-text__input')).toBeNull()
   })
 
   it('accepts numpad digits and shows an empty submenu without options', async () => {

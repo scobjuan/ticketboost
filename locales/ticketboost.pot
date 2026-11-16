@@ -167,3 +167,36 @@ msgstr ""
 
 msgid "The change could not be saved"
 msgstr ""
+
+msgid "The ticket already has that status"
+msgstr ""
+
+msgid "That status is not allowed for this ticket"
+msgstr ""
+
+msgid "The ticket status was changed"
+msgstr ""
+
+msgid "The ticket already has that priority"
+msgstr ""
+
+msgid "The ticket priority was changed"
+msgstr ""
+
+msgid "Write the solution first"
+msgstr ""
+
+msgid "GLPI did not accept the change"
+msgstr ""
+
+msgid "The solution was added to the ticket"
+msgstr ""
+
+msgid "The ticket was closed"
+msgstr ""
+
+msgid "Solution"
+msgstr ""
+
+msgid "Describe how the ticket was solved"
+msgstr ""

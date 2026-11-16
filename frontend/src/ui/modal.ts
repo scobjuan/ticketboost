@@ -44,8 +44,16 @@ export interface PickerView {
   readonly submit: (items: readonly PickerItem[]) => void
 }
 
+/** A text box for free text, such as the solution of a ticket; Ctrl+Enter confirms. */
+export interface TextView {
+  readonly type: 'text'
+  readonly title: string
+  readonly placeholder: string
+  readonly submit: (text: string) => void
+}
+
 /** Any panel view. */
-export type View = MenuView | PickerView
+export type View = MenuView | PickerView | TextView
 
 /** The leader panel. */
 export interface Modal {
@@ -94,6 +102,7 @@ export function createModal(doc: Document, t: Translate): Modal {
   let panel: HTMLElement | null = null
   let restoreFocus: Element | null = null
   let picker: PickerState | null = null
+  let field: HTMLTextAreaElement | null = null
   let counter = 0
 
   const isOpen = (): boolean => overlay !== null
@@ -104,6 +113,7 @@ export function createModal(doc: Document, t: Translate): Modal {
     }
     clearTimeout(picker?.timer)
     picker = null
+    field = null
     stack.length = 0
     overlay.remove()
     overlay = null
@@ -146,6 +156,7 @@ export function createModal(doc: Document, t: Translate): Modal {
     const shell = ensureShell()
     clearTimeout(picker?.timer)
     picker = null
+    field = null
     const title = h(
       doc,
       'div',
@@ -155,6 +166,22 @@ export function createModal(doc: Document, t: Translate): Modal {
     if (view.type === 'menu') {
       replaceChildren(shell, [title, renderMenu(view), renderFooter(view)])
       shell.focus()
+      return
+    }
+    if (view.type === 'text') {
+      const input = h(doc, 'textarea', {
+        class: 'tb-picker__input tb-text__input',
+        rows: '4',
+        'aria-label': view.title,
+        placeholder: view.placeholder
+      })
+      field = input
+      replaceChildren(shell, [
+        title,
+        h(doc, 'div', { class: 'tb-modal__body tb-picker' }, [input]),
+        renderFooter(view)
+      ])
+      input.focus()
       return
     }
     const state = createPicker(view)
@@ -363,9 +390,11 @@ export function createModal(doc: Document, t: Translate): Modal {
               ['Ctrl+Enter', 'ui.hint.confirm']
             ]
           : [['Enter', 'ui.hint.select']]
-        : stack.length === 1
-          ? [['?', 'ui.hint.help']]
-          : []
+        : view.type === 'text'
+          ? [['Ctrl+Enter', 'ui.hint.confirm']]
+          : stack.length === 1
+            ? [['?', 'ui.hint.help']]
+            : []
     hints.push(['Esc', stack.length > 1 ? 'ui.hint.back' : 'ui.hint.close'])
     return h(
       doc,
@@ -435,6 +464,9 @@ export function createModal(doc: Document, t: Translate): Modal {
     if (picker !== null) {
       return handlePickerKey(picker, event)
     }
+    if (field !== null) {
+      return handleTextKey(field, view, event)
+    }
     if (event.key === 'Backspace') {
       back()
       return true
@@ -451,6 +483,22 @@ export function createModal(doc: Document, t: Translate): Modal {
       }
     }
     return false
+  }
+
+  const handleTextKey = (
+    input: HTMLTextAreaElement,
+    view: View,
+    event: KeyboardEvent
+  ): boolean => {
+    if (event.key !== 'Enter' || !(event.ctrlKey || event.metaKey)) {
+      // Everything else is typing: leave it to the text box.
+      return false
+    }
+    const text = input.value.trim()
+    if (view.type === 'text' && text !== '') {
+      view.submit(text)
+    }
+    return true
   }
 
   const handlePickerKey = (

@@ -52,3 +52,19 @@ already assigned are not offered again. Closed and deleted tickets cannot be cha
 
 Which of these you see depends on your profile: assigning to others needs the GLPI right
 to assign tickets; assigning yourself needs the right to own or steal tickets.
+
+## Changing the ticket
+
+Like the assignment actions, these work on the open ticket, reload it when they finish and
+let GLPI show a notice. They are only offered in the central interface and only to profiles
+with the matching GLPI right.
+
+| Action | What it does                                                                                                         |
+| ------ | -------------------------------------------------------------------------------------------------------------------- |
+| ++s++  | Opens the statuses: New, Processing (assigned), Processing (planned) and Pending. Press a digit to choose one. The statuses the profile may not move to are refused |
+| ++r++  | Opens the priorities, from Very low to Major. Press a digit to choose one                                            |
+| ++c++  | Closes the ticket. By default it asks for the solution text (++ctrl+enter++ sends it) and creates the solution, so GLPI follows its normal solve and approval flow. If the administrator chose _Direct close_, it sets the status to Closed at once |
+| ++f++  | Opens the followup form under the timeline with the cursor in the editor. ++ctrl+enter++ sends it                   |
+| ++t++  | The same for a task                                                                                                  |
+
+The solution is stored as plain text. Solution templates are not offered yet.

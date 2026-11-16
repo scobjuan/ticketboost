@@ -57,6 +57,11 @@ final class ActionAvailability
         'assign_other',
         'unassign_me',
         'unassign_others',
+        'change_status',
+        'close',
+        'followup',
+        'task',
+        'change_priority',
         'help',
     ];
 

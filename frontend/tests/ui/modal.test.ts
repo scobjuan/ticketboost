@@ -6,7 +6,8 @@ import type {
   MenuItem,
   MenuView,
   PickerItem,
-  PickerView
+  PickerView,
+  TextView
 } from '../../src/ui/modal'
 import { createModal, SEARCH_DELAY_MS } from '../../src/ui/modal'
 
@@ -502,5 +503,69 @@ describe('createModal pickers', () => {
 
     expect(modal.handleKey(key({ key: 'Backspace' }))).toBe(false)
     expect(modal.isOpen()).toBe(true)
+  })
+})
+
+describe('createModal text views', () => {
+  beforeEach(() => {
+    document.body.replaceChildren()
+  })
+
+  const text = (extra: Partial<TextView> = {}): TextView => ({
+    type: 'text',
+    title: 'Solution',
+    placeholder: 'Describe it',
+    submit: vi.fn(),
+    ...extra
+  })
+  const field = () =>
+    document.querySelector<HTMLTextAreaElement>('.tb-text__input')!
+
+  it('shows a focused text box with its hint and breadcrumb', () => {
+    const modal = createModal(document, t)
+    modal.open(menu([]))
+    modal.push(text())
+
+    expect(title()).toBe('TicketBoost / Solution')
+    expect(field().placeholder).toBe('Describe it')
+    expect(field().getAttribute('aria-label')).toBe('Solution')
+    expect(document.activeElement).toBe(field())
+    expect(footer()).toContain('Ctrl+Enter')
+    expect(footer()).toContain('Esc')
+  })
+
+  it('submits the trimmed text on Ctrl+Enter and ignores empty text', () => {
+    const view = text()
+    const modal = createModal(document, t)
+    modal.open(view)
+
+    expect(modal.handleKey(key({ key: 'Enter', ctrlKey: true }))).toBe(true)
+    expect(view.submit).not.toHaveBeenCalled()
+
+    field().value = '  Rebooted the router  '
+    expect(modal.handleKey(key({ key: 'Enter', metaKey: true }))).toBe(true)
+    expect(view.submit).toHaveBeenCalledWith('Rebooted the router')
+  })
+
+  it('leaves typing, new lines and backspace to the text box', () => {
+    const modal = createModal(document, t)
+    modal.open(menu([]))
+    modal.push(text())
+
+    expect(modal.handleKey(key({ key: 'a' }))).toBe(false)
+    expect(modal.handleKey(key({ key: 'Enter' }))).toBe(false)
+    expect(modal.handleKey(key({ key: 'Backspace' }))).toBe(false)
+    expect(modal.isOpen()).toBe(true)
+  })
+
+  it('goes back to the menu on Escape', () => {
+    const modal = createModal(document, t)
+    modal.open(menu([item('a', ['a'])]))
+    modal.push(text())
+
+    expect(modal.handleKey(key({ key: 'Escape' }))).toBe(true)
+
+    expect(title()).toBe('TicketBoost')
+    expect(document.querySelector('.tb-text__input')).toBeNull()
   })
 })

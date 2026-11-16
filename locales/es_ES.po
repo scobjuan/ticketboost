@@ -170,3 +170,36 @@ msgstr "Se quitaron los asignados seleccionados"
 
 msgid "The change could not be saved"
 msgstr "No se pudo guardar el cambio"
+
+msgid "The ticket already has that status"
+msgstr "El ticket ya tiene ese estado"
+
+msgid "That status is not allowed for this ticket"
+msgstr "Ese estado no está permitido para este ticket"
+
+msgid "The ticket status was changed"
+msgstr "Se cambió el estado del ticket"
+
+msgid "The ticket already has that priority"
+msgstr "El ticket ya tiene esa prioridad"
+
+msgid "The ticket priority was changed"
+msgstr "Se cambió la prioridad del ticket"
+
+msgid "Write the solution first"
+msgstr "Escribe primero la solución"
+
+msgid "GLPI did not accept the change"
+msgstr "GLPI no aceptó el cambio"
+
+msgid "The solution was added to the ticket"
+msgstr "Se agregó la solución al ticket"
+
+msgid "The ticket was closed"
+msgstr "El ticket fue cerrado"
+
+msgid "Solution"
+msgstr "Solución"
+
+msgid "Describe how the ticket was solved"
+msgstr "Describe cómo se resolvió el ticket"

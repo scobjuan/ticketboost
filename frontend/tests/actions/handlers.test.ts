@@ -129,11 +129,11 @@ describe('createActionHandlers', () => {
     expect(api.calls).not.toHaveBeenCalled()
   })
 
-  it('does not know the actions of later phases yet', async () => {
+  it('does not know the actions that are not built yet', async () => {
     const api = fakeApi({})
 
     await expect(
-      createActionHandlers(document, api, vi.fn()).run('change_status')
+      createActionHandlers(document, api, vi.fn()).run('help')
     ).rejects.toThrow('not available yet')
     expect(api.calls).not.toHaveBeenCalled()
     expect(api.posts).not.toHaveBeenCalled()
@@ -141,6 +141,10 @@ describe('createActionHandlers', () => {
 
   it.each([
     ['assign_me', undefined, { action: 'assign_me', id: 7 }],
+    ['change_status', '4', { action: 'change_status', id: 7, value: '4' }],
+    ['change_priority', '5', { action: 'change_priority', id: 7, value: '5' }],
+    ['close', 'Fixed', { action: 'close', id: 7, value: 'Fixed' }],
+    ['close', undefined, { action: 'close', id: 7 }],
     ['unassign_me', undefined, { action: 'unassign_me', id: 7 }],
     [
       'assign_other',
@@ -240,6 +244,54 @@ describe('createActionHandlers', () => {
     await expect(createActionHandlers(doc, api).run('list')).rejects.toThrow(
       'did not give an address'
     )
+  })
+})
+
+describe('followup and task', () => {
+  beforeEach(() => {
+    document.body.replaceChildren()
+    setPageUrl('http://localhost/front/ticket.form.php?id=7')
+  })
+
+  it.each(['followup', 'task'] as const)(
+    'opens the %s form without calling the server',
+    async (id) => {
+      const api = fakeApi({})
+      const block = document.createElement('div')
+      block.id =
+        id === 'followup' ? 'new-ITILFollowup-block' : 'new-TicketTask-block'
+      const area = document.createElement('textarea')
+      area.name = 'content'
+      block.append(area)
+      document.body.append(block)
+      const show = vi.fn()
+      Object.assign(window, {
+        bootstrap: {
+          Collapse: {
+            getOrCreateInstance: (element: Element) => ({
+              show: () => {
+                show()
+                element.classList.add('show')
+              }
+            })
+          }
+        }
+      })
+
+      await createActionHandlers(document, api, vi.fn()).run(id)
+
+      expect(show).toHaveBeenCalled()
+      expect(document.activeElement).toBe(area)
+      expect(api.calls).not.toHaveBeenCalled()
+      expect(api.posts).not.toHaveBeenCalled()
+      Reflect.deleteProperty(window, 'bootstrap')
+    }
+  )
+
+  it('fails when the page has no such form', async () => {
+    await expect(
+      createActionHandlers(document, fakeApi({}), vi.fn()).run('task')
+    ).rejects.toThrow('form is not on this page')
   })
 })
 
