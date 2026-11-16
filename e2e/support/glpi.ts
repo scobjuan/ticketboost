@@ -86,3 +86,41 @@ export async function openSeedList(page: Page): Promise<SeedTickets> {
   }
   return tickets
 }
+
+/**
+ * Creates a ticket as the logged-in user through GLPI's own form endpoint, so a spec can
+ * change it freely without touching the seeded tickets. Its title starts with `[tb-e2e]`,
+ * which the seeded list (`[tb-seed]`) never matches.
+ * @param page Playwright page, logged in with a profile that may create tickets.
+ * @param title Text that follows the `[tb-e2e]` prefix.
+ * @returns The id of the new ticket.
+ */
+export async function createTicket(page: Page, title: string): Promise<number> {
+  await page.goto('/front/ticket.form.php')
+  // GLPI 11 publishes a session token; GLPI 12 protects requests without one.
+  const meta = page.locator('meta[property="glpi:csrf_token"]')
+  const token =
+    (await meta.count()) > 0 ? await meta.getAttribute('content') : null
+  const response = await page.request.post('/front/ticket.form.php', {
+    headers: token === null ? {} : { 'X-Glpi-Csrf-Token': token },
+    form: {
+      add: '1',
+      name: `[tb-e2e] ${title}`,
+      content: 'Created by the TicketBoost e2e specs.',
+      entities_id: '0',
+      itilcategories_id: '0',
+      type: '1',
+      urgency: '3',
+      impact: '3',
+      priority: '3',
+      ...(token === null ? {} : { _glpi_csrf_token: token })
+    },
+    maxRedirects: 0
+  })
+  const id = /id=(\d+)/.exec(response.headers().location ?? '')?.[1]
+  expect(
+    id,
+    `ticket creation answered ${String(response.status())}`
+  ).toBeDefined()
+  return Number(id)
+}
