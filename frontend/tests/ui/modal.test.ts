@@ -344,6 +344,44 @@ describe('createModal pickers', () => {
     expect(options().map((option) => option.textContent)).toEqual(['glpi'])
   })
 
+  it('does not choose from a list that the typed text has outdated', async () => {
+    const source = vi
+      .fn<(query: string) => Promise<readonly PickerItem[]>>()
+      .mockResolvedValueOnce(people)
+      .mockResolvedValueOnce([people[2]!])
+    const modal = createModal(document, t)
+    const view = picker({ source })
+    modal.open(view)
+    await vi.advanceTimersByTimeAsync(0)
+
+    input().value = 'g'
+    input().dispatchEvent(new Event('input'))
+    modal.handleKey(key({ key: 'Enter' }))
+    expect(view.submit).not.toHaveBeenCalled()
+
+    await vi.advanceTimersByTimeAsync(SEARCH_DELAY_MS)
+    modal.handleKey(key({ key: 'Enter' }))
+    expect(view.submit).toHaveBeenCalledWith([people[2]])
+  })
+
+  it('chooses again after a search that failed', async () => {
+    const source = vi
+      .fn<(query: string) => Promise<readonly PickerItem[]>>()
+      .mockResolvedValueOnce(people)
+      .mockRejectedValueOnce(new Error('offline'))
+    const modal = createModal(document, t)
+    const view = picker({ source })
+    modal.open(view)
+    await vi.advanceTimersByTimeAsync(0)
+
+    input().dispatchEvent(new Event('input'))
+    await vi.advanceTimersByTimeAsync(SEARCH_DELAY_MS)
+    modal.handleKey(key({ key: 'Enter' }))
+
+    expect(view.submit).not.toHaveBeenCalled()
+    expect(input().hasAttribute('aria-activedescendant')).toBe(false)
+  })
+
   it('shows translated empty and failure states', async () => {
     const modal = createModal(document, t)
     const source = vi

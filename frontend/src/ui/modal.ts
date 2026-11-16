@@ -77,6 +77,8 @@ interface PickerState {
   active: number
   readonly selected: Map<string, PickerItem>
   request: number
+  /** The text changed and its answer has not arrived: the list on screen is out of date. */
+  stale: boolean
   timer: ReturnType<typeof setTimeout> | undefined
 }
 
@@ -240,9 +242,11 @@ export function createModal(doc: Document, t: Translate): Modal {
       active: -1,
       selected: new Map(),
       request: 0,
+      stale: false,
       timer: undefined
     }
     input.addEventListener('input', () => {
+      state.stale = true
       clearTimeout(state.timer)
       state.timer = setTimeout(() => {
         search(state)
@@ -262,12 +266,14 @@ export function createModal(doc: Document, t: Translate): Modal {
         }
         state.results = results
         state.active = results.length > 0 ? 0 : -1
+        state.stale = false
         renderResults(state)
       })
       .catch(() => {
         if (picker === state && request === state.request) {
           state.results = []
           state.active = -1
+          state.stale = false
           renderResults(state, 'ui.search_failed')
         }
       })
@@ -323,6 +329,10 @@ export function createModal(doc: Document, t: Translate): Modal {
   }
 
   const choose = (state: PickerState, confirm: boolean): void => {
+    if (state.stale && !confirm) {
+      // Never pick from a list that does not match the text typed so far.
+      return
+    }
     const item = state.results[state.active]
     if (!state.view.multi) {
       if (item !== undefined) {
