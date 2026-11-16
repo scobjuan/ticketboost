@@ -19,7 +19,7 @@ that become false. Format: `path` `signature` - purpose.
 - `api/client.ts` `createApi(doc, baseUrl, fetcher?)` (`get`, `post`), `csrfToken(doc)`, `ApiError` - plugin endpoint client; sends `X-Requested-With` and the GLPI 11 CSRF token.
 - `bootstrap.ts` `parseBootstrap(data): AppConfig | null` - validates the server payload (trust boundary); null disables the panel.
 - `context/detect.ts` `ticketId(location): number | null`, `detectContext(location)` - ticket form is `/front/ticket.form.php?id=N` on 11 and 12.
-- `actions/handlers.ts` `createActionHandlers(doc, api, navigate?)`, `sameOriginUrl(location, target)`, `NAVIGATE_ENDPOINT` - runs panel actions; navigation asks `navigate.php` and opens its `redirect` (same origin only); a refusal shows the server message as a toast. Phase 4 extends `run` here.
+- `actions/handlers.ts` `createActionHandlers(doc, api, navigate?)`, `sameOriginUrl(location, target)`, `NAVIGATE_ENDPOINT` - runs panel actions; navigation asks `navigate.php` and opens its `redirect` (same origin only); a refusal shows the server message as a toast. `run` also posts the assignment actions to `action.php` and reloads on `redirect`; `search(id, query)` feeds the pickers through `search.php`; `pickerItems(data)` validates the answer.
 - `boot.ts` `startPanel(doc, api)`, `PANEL_ATTRIBUTE` (`data-ticketboost-panel` = `ready` | `off`, e2e waits on it), `BOOTSTRAP_ENDPOINT`.
 - `i18n/translate.ts` `createTranslator(labels)` - label lookup, falls back to the key.
 - `ui/modal.ts` `createModal(doc, t)` (`open`, `push`, `close`, `isOpen`, `handleKey`), views `MenuView` / `PickerView`, `SEARCH_DELAY_MS` - the panel.
@@ -42,6 +42,7 @@ that become false. Format: `path` `signature` - purpose.
 - `Http\JsonResponse` `success()`, `error()`, `send()`; `Http\RequestGuard` `guard($method, $level)`, `evaluate(...)` - envelope and request checks (ADR 0018).
 - `Bootstrap\ActionAvailability` `fromCapabilities()`, `forCurrentUser()`, `IMPLEMENTED`; `Bootstrap\Labels` `all()`; `Bootstrap\Payload` `build()`, `forCurrentUser()` - what `ajax/bootstrap.php` returns.
 - `Navigation\ListWalker` `step($ids, $current, $step, $accept)` (circular, skips unacceptable ids), `Navigation\NavigationRequest` `fromQuery()` (whitelist `to`/`id`), `Navigation\Navigator` `respond($query)`, `myTicketsUrl()` - behind `ajax/navigate.php` (GET, read-only: returns the URL in `redirect`).
+- `Assignment\Assigner` `respond($rawJson)` (the four assignment actions through `Ticket_User`/`Group_Ticket`, rights per ticket), `Assignment\ActorSearch` `respond($query)` (picker data), `Assignment\Assignees` `link()`, `current()`, `label()`, `assignable()`, `Assignment\Actor` (`user:N`/`group:N`), `AssignmentRequest::fromJson()`, `SearchRequest::fromQuery()` - behind `ajax/action.php` (POST, JSON body, 8 KB cap) and `ajax/search.php` (GET).
 - `ProfileTab` `render()` - TicketBoost tab on the profile form; posts to `front/profile.form.php`.
 
 ### Tests and e2e
@@ -66,6 +67,9 @@ that become false. Format: `path` `signature` - purpose.
 - `scripts/size-check.mjs` - 15 KB gzip budget for `public/js` + `public/css`.
 
 ## Patterns
+
+- Success of a state-changing action: `Session::addMessageAfterRedirect(message)` plus `redirect` to the same ticket; the page reloads and GLPI shows the notice. Never put user-controlled names in that message.
+- Native right checks without `Html::displayRightError()`: use `canViewItem()`, `canUpdateItem()`, `canAssign()`, `canAssignToMe()` on the loaded item; do not call `check()` (it exits).
 
 - New user-facing string: add the msgid to `locales/ticketboost.pot`, `en_GB.po` and
   `es_ES.po` in the same commit (see `.agents/playbooks/add-translation.md`).
@@ -135,6 +139,10 @@ that become false. Format: `path` `signature` - purpose.
   release job and adding vendor to the `scripts/build-release.sh` allowlist.
 
 ## Testing learnings
+
+- Test helper methods must not be named `run`, `status`, `name` or other `TestCase` methods (final in PHPUnit): fatal compile error.
+- e2e on shared seed data: a test that mutates a seed ticket must restore it, because a failed run leaves it changed and breaks the next ones. Reset with a PHP script run as `www-data` in each container (`podman cp` then `podman exec -u www-data c php /tmp/x.php`).
+- e2e pickers: wait for the list to match the typed text (`toHaveCount(1)`) before pressing Enter; the previous list stays visible while the new search is pending.
 
 - Seeding from a script: `require '/var/www/glpi/vendor/autoload.php'; (new Glpi\Kernel\Kernel('production'))->boot();`
   works in 11 and 12 as `www-data`; set `$_SESSION['glpiID']` and entity keys for business rules.
