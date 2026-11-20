@@ -33,7 +33,9 @@
  * Seeds the data the e2e specs rely on. Run it inside a GLPI container:
  *   php /var/www/glpi/plugins/ticketboost/e2e/seed/seed.php
  *
- * It is idempotent: users and tickets are found by login and by title.
+ * It is idempotent: users and tickets are found by login and by title. It also restores the
+ * starting state, so a run never inherits the leftovers of the previous one: the tickets the
+ * specs created (`[tb-e2e]`) are purged and the seeded tickets get their assignee and status back.
  *
  *   tech1, tech2   Technician profile, password equal to the login
  *   [tb-seed] 1-6  tickets; 1-3 assigned to tech1, 4-5 to tech2, 6 unassigned;
@@ -103,6 +105,49 @@ $tech1    = seed_technician('tech1');
 $tech2    = seed_technician('tech2');
 $selfserv = seed_user_id('post-only');
 
+/**
+ * Purges the tickets the specs created, so they never reach a list a spec walks.
+ */
+function seed_purge_spec_tickets(): int
+{
+    $purged = 0;
+    foreach (getAllDataFromTable('glpi_tickets', ['name' => ['LIKE', '[tb-e2e]%']]) as $row) {
+        if ((new Ticket())->delete(['id' => (int) $row['id']], true)) {
+            ++$purged;
+        }
+    }
+
+    return $purged;
+}
+
+/**
+ * Puts a seeded ticket back to its starting assignee and status.
+ *
+ * @param int $ticket_id Seeded ticket.
+ * @param int $assignee  User assigned at seed time, 0 for an unassigned ticket.
+ */
+function seed_restore_ticket(int $ticket_id, int $assignee): void
+{
+    $link = new Ticket_User();
+    foreach (getAllDataFromTable('glpi_tickets_users', ['tickets_id' => $ticket_id, 'type' => CommonITILActor::ASSIGN]) as $row) {
+        if ((int) $row['users_id'] !== $assignee) {
+            $link->delete(['id' => (int) $row['id']], true);
+        }
+    }
+    if (
+        $assignee > 0
+        && countElementsInTable('glpi_tickets_users', ['tickets_id' => $ticket_id, 'users_id' => $assignee, 'type' => CommonITILActor::ASSIGN]) === 0
+    ) {
+        $link->add(['tickets_id' => $ticket_id, 'users_id' => $assignee, 'type' => CommonITILActor::ASSIGN]);
+    }
+
+    $status = $assignee > 0 ? Ticket::ASSIGNED : Ticket::INCOMING;
+    $ticket = new Ticket();
+    if ($ticket->getFromDB($ticket_id) && (int) $ticket->fields['status'] !== $status) {
+        $ticket->update(['id' => $ticket_id, 'status' => $status]);
+    }
+}
+
 $tickets = [
     1 => [$tech1, $selfserv],
     2 => [$tech1, 0],
@@ -112,9 +157,13 @@ $tickets = [
     6 => [0, $selfserv],
 ];
 
+$purged = seed_purge_spec_tickets();
+
 foreach ($tickets as $number => [$assignee, $requester]) {
     $title = '[tb-seed] ' . $number;
-    if (countElementsInTable('glpi_tickets', ['name' => $title]) > 0) {
+    $existing = array_values(getAllDataFromTable('glpi_tickets', ['name' => $title]))[0] ?? null;
+    if ($existing !== null) {
+        seed_restore_ticket((int) $existing['id'], $assignee);
         continue;
     }
 
@@ -137,4 +186,5 @@ foreach ($tickets as $number => [$assignee, $requester]) {
     }
 }
 
+echo 'Purged ' . $purged . " spec tickets\n";
 echo 'Seed ready: ' . countElementsInTable('glpi_tickets', ['name' => ['LIKE', '[tb-seed]%']]) . " tickets\n";

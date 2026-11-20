@@ -1,6 +1,7 @@
 import type { Api, ApiEnvelope } from '../api/client'
 import type { ActionHandlers } from '../app'
 import { ticketId } from '../context/detect'
+import { openComposer } from '../editor/compose'
 import type { ActionId } from '../keymap/catalog'
 import type { PickerItem } from '../ui/modal'
 import { showToast } from '../ui/toast'
@@ -14,11 +15,15 @@ export const ACTION_ENDPOINT = 'action.php'
 /** Endpoint that lists who the assignment pickers offer. */
 export const SEARCH_ENDPOINT = 'search.php'
 
-const ASSIGNMENT_ACTIONS: readonly ActionId[] = [
+/** Actions the server runs on the ticket on screen, then the ticket reloads. */
+const SERVER_ACTIONS: readonly ActionId[] = [
   'assign_me',
   'assign_other',
   'unassign_me',
-  'unassign_others'
+  'unassign_others',
+  'change_status',
+  'change_priority',
+  'close'
 ]
 
 const NAVIGATION_ACTIONS: readonly ActionId[] = [
@@ -73,8 +78,8 @@ export function pickerItems(data: unknown): PickerItem[] {
 
 /**
  * Creates the handlers that run the panel actions against the plugin endpoints.
- * Navigation actions ask the server for the address to open and then go there; assignment
- * actions are posted and, once done, reload the ticket. A refusal from the server is shown
+ * Navigation actions ask the server for the address to open and then go there; ticket
+ * actions (assign, status, priority, close) are posted and, once done, reload the ticket. A refusal from the server is shown
  * as a toast with its own translated message.
  * @param doc The page document.
  * @param api Client for the plugin endpoints.
@@ -118,7 +123,13 @@ export function createActionHandlers(
 
   return {
     run: async (id, value) => {
-      if (ASSIGNMENT_ACTIONS.includes(id)) {
+      if (id === 'followup' || id === 'task') {
+        if (!(await openComposer(doc, id))) {
+          throw new Error(`The ${id} form is not on this page`)
+        }
+        return
+      }
+      if (SERVER_ACTIONS.includes(id)) {
         const body: Record<string, unknown> = {
           action: id,
           id: currentTicket(id)

@@ -86,6 +86,10 @@ test('the bootstrap endpoint answers an authenticated AJAX request', async ({
     'my_tickets',
     'assign_me',
     'unassign_me',
+    'change_status',
+    'close',
+    'followup',
+    'task',
     'help'
   ])
   expect(body.data.leader.key).toBe('Control')

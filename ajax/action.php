@@ -28,7 +28,7 @@
  * -------------------------------------------------------------------------
  */
 
-use GlpiPlugin\Ticketboost\Assignment\Assigner;
+use GlpiPlugin\Ticketboost\Action\ActionRouter;
 use GlpiPlugin\Ticketboost\Http\RequestGuard;
 
 use function Safe\file_get_contents;
@@ -36,6 +36,6 @@ use function Safe\file_get_contents;
 // State-changing, so POST only. GLPI itself refuses a POST that fails its CSRF check
 // before this file runs (ADR 0018).
 $response = RequestGuard::guard('POST', RequestGuard::LEVEL_USE)
-    ?? Assigner::respond(file_get_contents('php://input', false, null, 0, 8192));
+    ?? ActionRouter::respond(file_get_contents('php://input', false, null, 0, 8192));
 
 $response->send();

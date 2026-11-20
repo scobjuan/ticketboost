@@ -107,7 +107,7 @@ test('without a result list N walks the unresolved tickets of a technician', asy
   await fresh.close()
 })
 
-test('without a result list a self-service user only walks their own tickets', async ({
+test('a self-service user only walks their own tickets', async ({
   page,
   browser,
   baseURL
@@ -120,13 +120,24 @@ test('without a result list a self-service user only walks their own tickets', a
   await login(ownPage, 'selfservice')
   await ownPage.goto(`/front/ticket.form.php?id=${String(seed[1])}`)
 
-  await leaderThen(ownPage, 'n')
+  // The self-service home page leaves GLPI's own list in the session, and tickets that share
+  // a modification date come out of it in no fixed order, so the walk is checked as a set.
+  const ticketId = (url: URL): number => Number(url.searchParams.get('id'))
+  const walked: number[] = []
+  let current = seed[1]
+  for (let step = 0; step < 3; step++) {
+    const from = current
+    await leaderThen(ownPage, 'n')
+    await ownPage.waitForURL(
+      (url) =>
+        url.pathname.endsWith('ticket.form.php') && ticketId(url) !== from
+    )
+    current = ticketId(new URL(ownPage.url()))
+    walked.push(current)
+  }
 
-  await ownPage.waitForURL(`**/ticket.form.php?id=${String(seed[4])}*`)
-  await leaderThen(ownPage, 'n')
-  await ownPage.waitForURL(`**/ticket.form.php?id=${String(seed[6])}*`)
-  await leaderThen(ownPage, 'n')
-  await ownPage.waitForURL(`**/ticket.form.php?id=${String(seed[1])}*`)
+  expect(new Set(walked)).toEqual(new Set([seed[1], seed[4], seed[6]]))
+  expect(walked[2]).toBe(seed[1])
   await own.close()
 })
 

@@ -18,6 +18,9 @@ export interface SubmenuOption {
   readonly label: string
 }
 
+/** How the close action works; the administrator chooses it. */
+export type CloseMode = 'quick_solution' | 'direct_close'
+
 /** What the server tells the frontend (bootstrap payload, Phase 2). */
 export interface AppConfig {
   readonly leader: LeaderConfig
@@ -26,6 +29,8 @@ export interface AppConfig {
   /** Actions allowed for this user on this page, already filtered by rights. */
   readonly available: readonly ActionId[]
   readonly labels: Labels
+  /** Close with a typed solution (default) or straight to closed. */
+  readonly closeMode?: CloseMode
   readonly options?: Readonly<
     Partial<Record<ActionId, readonly SubmenuOption[]>>
   >
@@ -104,6 +109,14 @@ export function startApp(
     ]
   })
 
+  const solutionView = (action: ActionDefinition): View => ({
+    type: 'text',
+    title: t(`action.${action.id}`),
+    placeholder: t('ui.solution_hint'),
+    submit: (text) => {
+      run(action.id, text)
+    }
+  })
   const pickerView = (action: ActionDefinition): View => ({
     type: 'picker',
     title: t(`action.${action.id}`),
@@ -139,6 +152,10 @@ export function startApp(
   const select = (action: ActionDefinition): void => {
     switch (action.kind) {
       case 'run':
+        if (action.id === 'close' && config.closeMode !== 'direct_close') {
+          modal.push(solutionView(action))
+          return
+        }
         run(action.id)
         return
       case 'submenu':

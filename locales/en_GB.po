@@ -170,3 +170,36 @@ msgstr "The selected assignees were removed"
 
 msgid "The change could not be saved"
 msgstr "The change could not be saved"
+
+msgid "The ticket already has that status"
+msgstr "The ticket already has that status"
+
+msgid "That status is not allowed for this ticket"
+msgstr "That status is not allowed for this ticket"
+
+msgid "The ticket status was changed"
+msgstr "The ticket status was changed"
+
+msgid "The ticket already has that priority"
+msgstr "The ticket already has that priority"
+
+msgid "The ticket priority was changed"
+msgstr "The ticket priority was changed"
+
+msgid "Write the solution first"
+msgstr "Write the solution first"
+
+msgid "GLPI did not accept the change"
+msgstr "GLPI did not accept the change"
+
+msgid "The solution was added to the ticket"
+msgstr "The solution was added to the ticket"
+
+msgid "The ticket was closed"
+msgstr "The ticket was closed"
+
+msgid "Solution"
+msgstr "Solution"
+
+msgid "Describe how the ticket was solved"
+msgstr "Describe how the ticket was solved"

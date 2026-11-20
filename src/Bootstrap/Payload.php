@@ -50,6 +50,7 @@ final class Payload
      * @param array{enabled: bool, leader: array<string, mixed>, keymap: array<string, list<string>>} $preference
      * @param list<string>                                                                          $available
      * @param array<string, string>                                                                 $labels
+     * @param array<string, list<array{value: string, label: string}>>                               $options
      *
      * @return array<string, mixed>
      */
@@ -59,6 +60,7 @@ final class Payload
         array $preference,
         array $available,
         array $labels,
+        array $options = [],
     ): array {
         if (!$can_use || !$preference['enabled']) {
             return ['enabled' => false];
@@ -72,7 +74,8 @@ final class Payload
             'keymap'    => KeymapResolver::effective($config->keymap, $preference['keymap']),
             'available' => $available,
             'labels'    => $labels,
-            'options'   => new stdClass(),
+            'options'   => $options === [] ? new stdClass() : $options,
+            'closeMode' => $config->closeMode,
         ];
     }
 
@@ -89,6 +92,7 @@ final class Payload
             Preference::forUser(is_int($user_id) ? $user_id : 0),
             ActionAvailability::forCurrentUser(),
             Labels::all(),
+            Options::all(),
         );
     }
 }

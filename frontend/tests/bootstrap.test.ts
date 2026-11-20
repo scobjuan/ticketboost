@@ -17,8 +17,43 @@ describe('parseBootstrap', () => {
       leader: DEFAULT_LEADER,
       keymap: { next: ['KeyN'], help: ['?'] },
       available: ['help', 'next'],
-      labels: { 'ui.title': 'TicketBoost' }
+      labels: { 'ui.title': 'TicketBoost' },
+      closeMode: 'quick_solution',
+      options: {}
     })
+  })
+
+  it('reads the submenu options and the close mode', () => {
+    const config = parseBootstrap({
+      ...valid,
+      closeMode: 'direct_close',
+      options: {
+        change_status: [
+          { value: '1', label: 'New' },
+          { value: 2, label: 'Bad value' },
+          { label: 'No value' },
+          'junk'
+        ],
+        change_priority: 'not a list',
+        unknown_action: [{ value: '1', label: 'x' }]
+      }
+    })
+
+    expect(config?.closeMode).toBe('direct_close')
+    expect(config?.options).toEqual({
+      change_status: [{ value: '1', label: 'New' }]
+    })
+  })
+
+  it.each([
+    ['an unknown close mode', { closeMode: 'delete' }],
+    ['a close mode that is not text', { closeMode: 3 }],
+    ['options that are not an object', { options: [] }]
+  ])('falls back to the normal close flow with %s', (_name, extra) => {
+    const config = parseBootstrap({ ...valid, ...extra })
+
+    expect(config?.closeMode).toBe('quick_solution')
+    expect(config?.options).toEqual({})
   })
 
   it.each([

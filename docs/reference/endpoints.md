@@ -6,7 +6,7 @@ below with the user session. Every request is authorized again on the server.
 | Endpoint             | Method | Status  | Purpose                                                                   |
 | -------------------- | ------ | ------- | ------------------------------------------------------------------------- |
 | `ajax/bootstrap.php` | GET    | Ready   | Effective leader, keymap, available actions and translated labels         |
-| `ajax/action.php`    | POST   | Ready   | Runs an assignment action on a ticket (status and priority follow)        |
+| `ajax/action.php`    | POST   | Ready   | Runs an assignment or ticket action (status, priority, close)             |
 | `ajax/navigate.php`  | GET    | Ready   | Address to open for next, previous, list or my tickets                    |
 | `ajax/search.php`    | GET    | Ready   | Users and groups that can be assigned, or the current assignees           |
 
@@ -95,3 +95,24 @@ no-op (already assigned, not assigned), 400 for an assignee that cannot be assig
 `data` as a list of `{"id": "user:3", "label": "...", "detail": "..."}`: at most 10 users
 and 10 groups for `assign_other` (already assigned ones left out), every assignee but the
 current user for `unassign_others`. It needs the right to assign on the ticket.
+
+## Ticket actions
+
+The same endpoint also runs these actions. They need the central interface; self-service
+users get 403.
+
+| `action`          | `value`                                         | Native right checked on the ticket                           |
+| ----------------- | ----------------------------------------------- | ------------------------------------------------------------ |
+| `change_status`   | `"1"` New, `"2"` assigned, `"3"` planned, `"4"` pending | update; the status must be allowed by the profile matrix for the current one |
+| `change_priority` | `"1"` to `"6"`                                  | update and the right to change the priority                  |
+| `close`           | the solution text; none in direct mode          | quick solution: right to solve; direct close: update and a closed status allowed for the profile |
+
+`close` follows the administrator setting `close_mode`. With `quick_solution` (default) the
+text is required (up to 10000 characters) and becomes an `ITILSolution`, so GLPI applies
+its own flow (solved, then approval and closing). With `direct_close` the ticket goes to
+Closed and sending text is refused with 400. The bootstrap payload carries the mode as
+`closeMode` and the choices of `change_status` and `change_priority` in `options`.
+
+GLPI may apply business rules to a change; if it ends up with a different value the answer
+is 422 and nothing is reported as done. Statuses: 409 when the value is already set or the
+ticket is closed or deleted, 400 for a status the profile may not use.

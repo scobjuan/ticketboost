@@ -1,4 +1,4 @@
-import type { AppConfig } from './app'
+import type { AppConfig, CloseMode, SubmenuOption } from './app'
 import type { Labels } from './i18n/translate'
 import type { ActionId, Keymap } from './keymap/catalog'
 import { ACTION_IDS } from './keymap/catalog'
@@ -25,7 +25,38 @@ export function parseBootstrap(data: unknown): AppConfig | null {
   if (leader === null || keymap === null || labels === null) {
     return null
   }
-  return { leader, keymap, labels, available }
+  return {
+    leader,
+    keymap,
+    labels,
+    available,
+    closeMode: parseCloseMode(data.closeMode),
+    options: parseOptions(data.options)
+  }
+}
+
+function parseCloseMode(value: unknown): CloseMode {
+  return value === 'direct_close' ? 'direct_close' : 'quick_solution'
+}
+
+function parseOptions(
+  value: unknown
+): Partial<Record<ActionId, readonly SubmenuOption[]>> {
+  const options: Partial<Record<ActionId, SubmenuOption[]>> = {}
+  if (!isRecord(value)) {
+    return options
+  }
+  for (const [action, entries] of Object.entries(value)) {
+    if (!isActionId(action) || !Array.isArray(entries)) {
+      continue
+    }
+    options[action] = (entries as unknown[]).flatMap((entry) =>
+      isRecord(entry) && isString(entry.value) && isString(entry.label)
+        ? [{ value: entry.value, label: entry.label }]
+        : []
+    )
+  }
+  return options
 }
 
 function parseLeader(value: unknown): LeaderConfig | null {

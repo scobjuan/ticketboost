@@ -207,3 +207,9 @@
     animation: none;
   }
 }
+
+.tb-text__input {
+  resize: vertical;
+  min-height: 5rem;
+  margin-bottom: 0;
+}

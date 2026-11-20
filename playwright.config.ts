@@ -8,6 +8,8 @@ const GLPI12_URL = process.env.GLPI12_URL ?? 'http://localhost:8012'
 export default defineConfig({
   testDir: 'e2e/specs',
   timeout: 60_000,
+  // WebKit needs over 6 s to show the notice of a page that reloads after an action.
+  expect: { timeout: 15_000 },
   fullyParallel: false,
   workers: 1,
   forbidOnly: Boolean(process.env.CI),
