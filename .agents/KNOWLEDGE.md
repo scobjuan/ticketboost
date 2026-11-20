@@ -174,6 +174,8 @@ that become false. Format: `path` `signature` - purpose.
   (`sha256('acmebot')`) and write emojis as `\u{...}` escapes.
 - Vitest runs `frontend/tests/**` and `scripts/tests/**`; coverage thresholds apply to
   `frontend/src/**` only (`main.ts` excluded because it just calls `boot`).
+- WebKit is slow after a full page reload (the GLPI notice took 6.3 s): the global `expect.timeout`
+  is 15 s; do not add per-assertion waits for it.
 - Playwright WebKit does not run on Arch hosts (missing Ubuntu libs such as libicu74):
   use `make e2e-container ARGS="--project=glpi12-webkit"` (official Playwright image,
   host network). Chromium and Firefox run on the host.

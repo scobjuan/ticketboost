@@ -25,14 +25,12 @@ Decisions go to `.agents/decisions/`, reusable knowledge to `.agents/KNOWLEDGE.m
 
 ## In progress (max 10)
 
-- `feat/ticket-actions`: Phase 5 done. Two local commits pending push: the self-cleaning seed
-  (`e2e/seed/seed.php`) and the order-independent self-service walk in `navigation.spec.ts`.
-  Full e2e on glpi11-chromium, glpi12-chromium and glpi12-firefox: 78 passed (2026-11-19).
+- `feat/ticket-actions`: Phase 5 done, e2e green on all four projects (2026-11-19): 78 on chromium and
+  firefox, 26 on webkit (`make e2e-container`). Pending: push and PR with owner approval.
   Project names: `glpi11-chromium`, `glpi12-chromium`, `glpi12-firefox`, `glpi12-webkit`.
 
 ## Next steps (max 20)
 
-0. Check webkit with `make e2e-container ARGS="--project=glpi12-webkit"` (the host cannot launch it).
 1. Push `feat/ticket-actions` and open the PR once the owner approves; after CI is green and the owner
    approves, squash-merge.
 2. Phase 6 reminder: key recorder and conflict UI use `KeymapResolver::issues()`; admin
@@ -93,7 +91,8 @@ Decisions go to `.agents/decisions/`, reusable knowledge to `.agents/KNOWLEDGE.m
   verifying with a second `make e2e`. Next: "Next steps" 0.
 - 2026-11-19 Found why `navigation.spec.ts:110` flaked: the self-service home fills the session list and two
   tickets share `date_mod`, so the order varied. Spec now asserts the set of visited ids; e2e green (78).
-  Stopped at: owner approval to push. Next: "Next steps" 0 and 1.
+  WebKit showed the post-reload notice after 6.3 s (5 s default expect): `expect.timeout` is now 15 s.
+  Stopped at: push and PR. Next: "Next steps" 1.
 
 ## ADR index
 
