@@ -1,6 +1,6 @@
 # Project memory (max 250 lines, prune every session)
 
-Updated: 2026-11-16 | Version: unreleased (target 0.1.0) | Phase: 4 merged, Phase 5 implemented
+Updated: 2026-11-19 | Version: unreleased (target 0.1.0) | Phase: 4 merged, Phase 5 implemented
 
 Live state for the next session. Keep it short and current; git keeps the history.
 Decisions go to `.agents/decisions/`, reusable knowledge to `.agents/KNOWLEDGE.md`.
@@ -25,10 +25,14 @@ Decisions go to `.agents/decisions/`, reusable knowledge to `.agents/KNOWLEDGE.m
 
 ## In progress (max 10)
 
-- `feat/ticket-actions`: Phase 5 done and committed locally; waiting for the full e2e run and owner approval to push.
+- `feat/ticket-actions`: Phase 5 done. Two local commits pending push: the self-cleaning seed
+  (`e2e/seed/seed.php`) and the order-independent self-service walk in `navigation.spec.ts`.
+  Full e2e on glpi11-chromium, glpi12-chromium and glpi12-firefox: 78 passed (2026-11-19).
+  Project names: `glpi11-chromium`, `glpi12-chromium`, `glpi12-firefox`, `glpi12-webkit`.
 
 ## Next steps (max 20)
 
+0. Check webkit with `make e2e-container ARGS="--project=glpi12-webkit"` (the host cannot launch it).
 1. Push `feat/ticket-actions` and open the PR once the owner approves; after CI is green and the owner
    approves, squash-merge.
 2. Phase 6 reminder: key recorder and conflict UI use `KeymapResolver::issues()`; admin
@@ -40,8 +44,6 @@ Decisions go to `.agents/decisions/`, reusable knowledge to `.agents/KNOWLEDGE.m
 5. Phase 6 must also: add the e2e for `close_mode = direct_close` (needs the admin page to set it; the
    PHPUnit test and the Vitest app test already cover it), and decide on `SolutionTemplate` support for
    the quick close (the plan mentions "text or template"; Phase 5 ships text only).
-6. The e2e "self-service user only walks their own tickets" timed out once on glpi11-chromium under
-   load and passed alone: watch it for flakiness.
 
 ## Blockers and waiting on owner (max 10)
 
@@ -86,6 +88,12 @@ Decisions go to `.agents/decisions/`, reusable knowledge to `.agents/KNOWLEDGE.m
 - 2026-11-16 Phase 5 implemented on `feat/ticket-actions`. Found on real GLPI: the followup editor must be
   focused only after TinyMCE initializes; self-service reached the status check (now 403 first).
   Stopped at: full e2e run, then owner approval to push. Next: "Next steps" 1.
+
+- 2026-11-18 Full e2e run found test pollution (see In progress); seed made self-cleaning. Stopped at:
+  verifying with a second `make e2e`. Next: "Next steps" 0.
+- 2026-11-19 Found why `navigation.spec.ts:110` flaked: the self-service home fills the session list and two
+  tickets share `date_mod`, so the order varied. Spec now asserts the set of visited ids; e2e green (78).
+  Stopped at: owner approval to push. Next: "Next steps" 0 and 1.
 
 ## ADR index
 

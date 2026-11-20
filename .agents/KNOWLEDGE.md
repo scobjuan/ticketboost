@@ -158,8 +158,14 @@ that become false. Format: `path` `signature` - purpose.
   PHP while Playwright runs. `pkill -f playwright` also kills the agent shell (exit 144).
 - `page.waitForURL('**/ticket.form.php?id=*')` matches the page you are already on: wait for
   the exact new id, or a predicate that differs from the starting one.
-- GLPI fills `$_SESSION['glpilistitems']` when a ticket list renders; a fresh browser context
-  has none (use one to test the fallback). Notices across a redirect: `Session::addMessageAfterRedirect`.
+- GLPI fills `$_SESSION['glpilistitems']` when a ticket list renders, and the self-service
+  home page (`/Helpdesk`) renders one, so a self-service session never reaches the fallback
+  (a fresh technician context does: the central home has no ticket list). Tickets with the same
+  `date_mod` come out of that list in no fixed order: never assert a walk order across them,
+  assert the set of visited ids. Notices across a redirect: `Session::addMessageAfterRedirect`.
+- Debugging a flaky e2e: the trace zip holds the network log (`*.network`); PHP sessions live in
+  `/var/glpi/files/_sessions` of each container. A temporary `file_put_contents` in `src/` is live
+  through the bind mount; revert it with `git checkout`.
 - Apps started in a test listen on `document`: call `app.destroy()` in `afterEach`, or
   later tests see several panels. `toHaveBeenCalledWith(doc)` deep-compares documents
   (two empty ones are equal): compare `mock.calls` with `toBe`.
