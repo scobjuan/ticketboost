@@ -26,7 +26,9 @@ Browser (every GLPI page)                         GLPI server
 - **Never break GLPI.** Every frontend entry point and handler runs through `safe()`; a
   plugin error is logged with the `[ticketboost]` prefix and the page keeps working.
 - **No hardcoded text in TypeScript.** Labels come from PHP gettext.
-- **Small bundle.** Zero runtime dependencies, 15 KB gzip budget enforced in CI.
+- **Small bundle.** Zero runtime dependencies, 15 KB gzip budget enforced in CI. The key
+  recorder of the configuration pages is a second bundle, `ticketboost-config.js`, with its
+  own 10 KB budget, loaded only on those pages ([ADR 0019](https://github.com/scobjuan/ticketboost/blob/main/.agents/decisions/0019-separate-config-bundle.md)).
 
 ## Repository layout
 

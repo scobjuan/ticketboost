@@ -21,6 +21,7 @@
     "frontend/**/*.ts",
     "e2e/**/*.ts",
     "vite.config.ts",
+    "vite.settings.config.ts",
     "vitest.config.ts",
     "playwright.config.ts"
   ]

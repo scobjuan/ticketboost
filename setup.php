@@ -64,6 +64,7 @@ function plugin_init_ticketboost(): void
     $assets = new Assets(__DIR__ . '/public');
     $PLUGIN_HOOKS['add_javascript_module']['ticketboost'] = $assets->scripts();
     $PLUGIN_HOOKS['add_css']['ticketboost']               = $assets->stylesheets();
+    $PLUGIN_HOOKS['config_page']['ticketboost']           = 'front/config.form.php';
 }
 
 /**
