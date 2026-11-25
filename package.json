@@ -10,7 +10,7 @@
     "node": ">=24"
   },
   "scripts": {
-    "build": "vite build",
+    "build": "vite build && vite build --config vite.settings.config.ts",
     "dev": "vite build --watch",
     "lint": "eslint .",
     "format": "prettier --write .",
