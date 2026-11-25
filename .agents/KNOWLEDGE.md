@@ -186,6 +186,8 @@ that become false. Format: `path` `signature` - purpose.
 
 - TypeScript 7 is not supported by typescript-eslint 8 (peer `<6.1`): TS is pinned to `~6.0`
   and `.github/dependabot.yml` ignores TS major updates; drop both once supported.
+- Dependabot pull request bodies quote upstream release notes with emojis: `ci.yml` checks only
+  their title (ADR 0020). Do not extend the exception to other bots.
 - pnpm 12 blocks dependency build scripts unless approved in `pnpm-workspace.yaml`
   `allowBuilds`.
 - Vite library mode: `fileName: () => 'js/ticketboost.js'` and
