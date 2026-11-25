@@ -50,6 +50,7 @@ final class LocalesTest extends TestCase
             glob($root . '/src/*/*.php') ?: [],
             glob($root . '/ajax/*.php') ?: [],
             glob($root . '/front/*.php') ?: [],
+            glob($root . '/templates/*.twig') ?: [],
             [$root . '/setup.php', $root . '/hook.php'],
         );
         foreach ($files as $file) {
