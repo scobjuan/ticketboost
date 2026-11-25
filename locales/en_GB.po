@@ -203,3 +203,72 @@ msgstr "Solution"
 
 msgid "Describe how the ticket was solved"
 msgstr "Describe how the ticket was solved"
+
+msgid "Tap and release"
+msgstr "Tap and release"
+
+msgid "Hold"
+msgstr "Hold"
+
+msgid "Quick solution"
+msgstr "Quick solution"
+
+msgid "Ask for the solution text and solve the ticket; GLPI then applies its own flow."
+msgstr "Ask for the solution text and solve the ticket; GLPI then applies its own flow."
+
+msgid "Direct close"
+msgstr "Direct close"
+
+msgid "Close the ticket at once when the profile is allowed to."
+msgstr "Close the ticket at once when the profile is allowed to."
+
+msgid "Press the new shortcut"
+msgstr "Press the new shortcut"
+
+msgid "%s is not a valid shortcut"
+msgstr "%s is not a valid shortcut"
+
+msgid "%s is kept by the browser or GLPI and cannot be used"
+msgstr "%s is kept by the browser or GLPI and cannot be used"
+
+msgid "%1$s is already used by %2$s"
+msgstr "%1$s is already used by %2$s"
+
+msgid "%s is not an action of TicketBoost"
+msgstr "%s is not an action of TicketBoost"
+
+msgid "The settings were not saved"
+msgstr "The settings were not saved"
+
+msgid "Leader key"
+msgstr "Leader key"
+
+msgid "Key"
+msgstr "Key"
+
+msgid "Activation"
+msgstr "Activation"
+
+msgid "Number of taps"
+msgstr "Number of taps"
+
+msgid "Longest tap (ms)"
+msgstr "Longest tap (ms)"
+
+msgid "Time between taps (ms)"
+msgstr "Time between taps (ms)"
+
+msgid "Hold time (ms)"
+msgstr "Hold time (ms)"
+
+msgid "Close action"
+msgstr "Close action"
+
+msgid "Shortcuts"
+msgstr "Shortcuts"
+
+msgid "Leave a field empty to keep the default. Separate several shortcuts with commas."
+msgstr "Leave a field empty to keep the default. Separate several shortcuts with commas."
+
+msgid "Record"
+msgstr "Record"

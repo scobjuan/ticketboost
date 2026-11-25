@@ -203,3 +203,72 @@ msgstr "Solución"
 
 msgid "Describe how the ticket was solved"
 msgstr "Describe cómo se resolvió el ticket"
+
+msgid "Tap and release"
+msgstr "Pulsar y soltar"
+
+msgid "Hold"
+msgstr "Mantener pulsada"
+
+msgid "Quick solution"
+msgstr "Solución rápida"
+
+msgid "Ask for the solution text and solve the ticket; GLPI then applies its own flow."
+msgstr "Pide el texto de la solución y resuelve el ticket; después GLPI aplica su propio flujo."
+
+msgid "Direct close"
+msgstr "Cierre directo"
+
+msgid "Close the ticket at once when the profile is allowed to."
+msgstr "Cierra el ticket de inmediato cuando el perfil tiene permiso."
+
+msgid "Press the new shortcut"
+msgstr "Pulsa el nuevo atajo"
+
+msgid "%s is not a valid shortcut"
+msgstr "%s no es un atajo válido"
+
+msgid "%s is kept by the browser or GLPI and cannot be used"
+msgstr "%s lo reservan el navegador o GLPI y no se puede usar"
+
+msgid "%1$s is already used by %2$s"
+msgstr "%1$s ya lo usa %2$s"
+
+msgid "%s is not an action of TicketBoost"
+msgstr "%s no es una acción de TicketBoost"
+
+msgid "The settings were not saved"
+msgstr "No se guardaron los ajustes"
+
+msgid "Leader key"
+msgstr "Tecla líder"
+
+msgid "Key"
+msgstr "Tecla"
+
+msgid "Activation"
+msgstr "Activación"
+
+msgid "Number of taps"
+msgstr "Número de pulsaciones"
+
+msgid "Longest tap (ms)"
+msgstr "Pulsación más larga (ms)"
+
+msgid "Time between taps (ms)"
+msgstr "Tiempo entre pulsaciones (ms)"
+
+msgid "Hold time (ms)"
+msgstr "Tiempo de pulsación mantenida (ms)"
+
+msgid "Close action"
+msgstr "Acción de cierre"
+
+msgid "Shortcuts"
+msgstr "Atajos"
+
+msgid "Leave a field empty to keep the default. Separate several shortcuts with commas."
+msgstr "Deja un campo vacío para mantener el atajo por defecto. Separa varios atajos con comas."
+
+msgid "Record"
+msgstr "Grabar"

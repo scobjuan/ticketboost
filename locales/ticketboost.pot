@@ -200,3 +200,72 @@ msgstr ""
 
 msgid "Describe how the ticket was solved"
 msgstr ""
+
+msgid "Tap and release"
+msgstr ""
+
+msgid "Hold"
+msgstr ""
+
+msgid "Quick solution"
+msgstr ""
+
+msgid "Ask for the solution text and solve the ticket; GLPI then applies its own flow."
+msgstr ""
+
+msgid "Direct close"
+msgstr ""
+
+msgid "Close the ticket at once when the profile is allowed to."
+msgstr ""
+
+msgid "Press the new shortcut"
+msgstr ""
+
+msgid "%s is not a valid shortcut"
+msgstr ""
+
+msgid "%s is kept by the browser or GLPI and cannot be used"
+msgstr ""
+
+msgid "%1$s is already used by %2$s"
+msgstr ""
+
+msgid "%s is not an action of TicketBoost"
+msgstr ""
+
+msgid "The settings were not saved"
+msgstr ""
+
+msgid "Leader key"
+msgstr ""
+
+msgid "Key"
+msgstr ""
+
+msgid "Activation"
+msgstr ""
+
+msgid "Number of taps"
+msgstr ""
+
+msgid "Longest tap (ms)"
+msgstr ""
+
+msgid "Time between taps (ms)"
+msgstr ""
+
+msgid "Hold time (ms)"
+msgstr ""
+
+msgid "Close action"
+msgstr ""
+
+msgid "Shortcuts"
+msgstr ""
+
+msgid "Leave a field empty to keep the default. Separate several shortcuts with commas."
+msgstr ""
+
+msgid "Record"
+msgstr ""
