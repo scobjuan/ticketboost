@@ -25,7 +25,9 @@ and ends by updating MEMORY and KNOWLEDGE (see `.agents/playbooks/`).
 `pnpm agents:check` runs in the pre-commit hook and in CI. It rejects emojis, attribution
 trailers and tool names, untranslated Spanish strings, missing ADR or playbook metadata,
 and agent files over their size limits. The commit-msg hook applies the attribution
-check to commit messages; CI applies it to pull request titles and bodies.
+check to commit messages; CI applies it to pull request titles and bodies. Dependabot
+pull requests are the exception: only their title is checked, because their body quotes
+upstream release notes.
 
 ## Tool-specific filenames
 

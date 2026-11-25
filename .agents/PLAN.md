@@ -217,7 +217,8 @@ ticketboost/
   `scripts/build-release.sh` (composer --no-dev, pnpm build, msgfmt, export-ignore dev files)
   -> `ticketboost-X.Y.Z.tar.bz2` attached to the release.
 - `docs.yml`: build on PR, deploy to GitHub Pages on release.
-- Dependabot for composer, npm, actions (conventional prefixes `chore(deps)`).
+- Dependabot for composer, npm, actions (conventional prefixes `chore(deps)`); its pull
+  requests are exempt from owner rules 1 and 2 as limited by ADR 0020.
 - Branch protection on `main` (applied by owner or with explicit approval): PR required,
   all checks required, linear history, no force push, 0 approvals (solo maintainer).
 - Versioning: start at 0.1.0 (`Release-As`), `bump-minor-pre-major`; 1.0.0 when stable.

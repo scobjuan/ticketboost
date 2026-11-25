@@ -19,6 +19,11 @@ by tooling (`pnpm agents:check`, hooks, CI); the rest are checked in review.
    translations)
 4. Conventional Commits and Semantic Versioning. (enforced by commitlint)
 
+Single exception to rules 1 and 2, approved by the owner (ADR 0020): dependency update pull
+requests opened by Dependabot keep their generated body and branch, and their commits keep the
+bot as author. Their titles are still checked, and the squash commit takes only the title. The
+exception covers no other bot or tool.
+
 ## 2. Git, branches and releases
 
 - Trunk-based: `main` is protected; work on short branches `feat/...`, `fix/...`,

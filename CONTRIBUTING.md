@@ -31,6 +31,7 @@ Follow [docs/development/local-environment.md](docs/development/local-environmen
 - Breaking changes (removed action, changed default binding, dropped GLPI or PHP version)
   use `!` and describe the migration.
 - Do not add tool attribution trailers or signatures, and no emojis outside commit messages.
+  Dependency update pull requests opened by Dependabot are the only exception.
 - Git hooks run lint, rule guards and commitlint; CI runs the full suite and must be green.
 
 ## Style
