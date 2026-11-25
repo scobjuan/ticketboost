@@ -35,7 +35,8 @@
  *
  * It is idempotent: users and tickets are found by login and by title. It also restores the
  * starting state, so a run never inherits the leftovers of the previous one: the tickets the
- * specs created (`[tb-e2e]`) are purged and the seeded tickets get their assignee and status back.
+ * specs created (`[tb-e2e]`) are purged, the seeded tickets get their assignee and status back and the
+ * plugin settings return to their defaults.
  *
  *   tech1, tech2   Technician profile, password equal to the login
  *   [tb-seed] 1-6  tickets; 1-3 assigned to tech1, 4-5 to tech2, 6 unassigned;
@@ -158,6 +159,7 @@ $tickets = [
 ];
 
 $purged = seed_purge_spec_tickets();
+Config::deleteConfigurationValues('plugin:ticketboost', ['leader', 'keymap', 'close_mode']);
 
 foreach ($tickets as $number => [$assignee, $requester]) {
     $title = '[tb-seed] ' . $number;
