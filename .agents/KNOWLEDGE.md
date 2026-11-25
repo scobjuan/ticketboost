@@ -140,6 +140,18 @@ that become false. Format: `path` `signature` - purpose.
   `vendor/`. Adding a runtime dependency requires `composer install --no-dev` in the
   release job and adding vendor to the `scripts/build-release.sh` allowlist.
 
+## Configuration UI
+
+- The admin page is `front/config.form.php` (hook `config_page`), rendered with
+  `TemplateRenderer::getInstance()->display('@ticketboost/config.html.twig', ...)`. In Twig `csrf_token()` and
+  `path('/plugins/ticketboost/js/...')` work on GLPI 11 and 12; `Session::checkRight` answers 403.
+- `ConfigForm::fromPost` reports unusable shortcuts, it never drops them; `ConfigPage::describe` and the TS
+  `check.ts` share the same message templates (`%s`, `%1$s`, `%2$s`), passed in `data-tb-messages`.
+- PHPStan: `Safe\preg_split` returns an untyped `array` (filter with `is_string`), and numeric string keys become
+  int keys, so type override layers as `array<array-key, ...>`.
+- ESLint allows default exports only in `*.config.ts`: name extra Vite configs `vite.<name>.config.ts`.
+- Anything that adds a listener on `document` returns a `destroy()` (AbortController) so tests do not leak it.
+
 ## Testing learnings
 
 - `ui/modal.ts` views: `menu`, `picker`, `text` (textarea, Ctrl+Enter submits); `app.ts` pushes the text view for `close` unless `closeMode` is `direct_close`.
