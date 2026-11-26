@@ -46,7 +46,8 @@ jobs:
           GH_TOKEN: ${{ secrets.RELEASE_PLEASE_TOKEN }}
         run: >-
           gh release upload "${{ needs.release-please.outputs.tag_name }}"
-          "dist/ticketboost-${{ needs.release-please.outputs.version }}.tar.bz2" --clobber
+          "dist/ticketboost-${{ needs.release-please.outputs.version }}.tar.bz2"
+          dist/ticketboost.tar.bz2 --clobber
 
   docs:
     needs: [release-please, package]

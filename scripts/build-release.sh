@@ -28,5 +28,7 @@ rm -f "$dest/public/.gitkeep"
 mkdir -p dist
 archive="dist/ticketboost-${version}.tar.bz2"
 tar -C "$stage" -cjf "$archive" ticketboost
+# The same archive under a fixed name: the download address of plugin.xml holds the version once.
+cp "$archive" dist/ticketboost.tar.bz2
 echo "Built $archive"
 tar -tjf "$archive" | head -40

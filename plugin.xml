@@ -25,6 +25,7 @@
          <num>0.0.0</num><!-- x-release-please-version -->
          <compatibility>~11.0.0</compatibility>
          <compatibility>~12.0.0</compatibility>
+         <download_url>https://github.com/scobjuan/ticketboost/releases/download/v0.0.0/ticketboost.tar.bz2</download_url><!-- x-release-please-version -->
       </version>
    </versions>
    <langs>
@@ -47,4 +48,11 @@
          <tag>mesa de ayuda</tag>
       </es>
    </tags>
+   <screenshots>
+      <screenshot>https://raw.githubusercontent.com/scobjuan/ticketboost/main/docs/assets/screenshots/panel.png</screenshot>
+      <screenshot>https://raw.githubusercontent.com/scobjuan/ticketboost/main/docs/assets/screenshots/assign.png</screenshot>
+      <screenshot>https://raw.githubusercontent.com/scobjuan/ticketboost/main/docs/assets/screenshots/solution.png</screenshot>
+      <screenshot>https://raw.githubusercontent.com/scobjuan/ticketboost/main/docs/assets/screenshots/configuration.png</screenshot>
+      <screenshot>https://raw.githubusercontent.com/scobjuan/ticketboost/main/docs/assets/screenshots/personal-settings.png</screenshot>
+   </screenshots>
 </root>
