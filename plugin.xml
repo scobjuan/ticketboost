@@ -1,7 +1,7 @@
 <root>
    <name>TicketBoost</name>
    <key>ticketboost</key>
-   <state>alpha</state>
+   <state>beta</state>
    <logo>https://raw.githubusercontent.com/scobjuan/ticketboost/main/docs/assets/logo.png</logo>
    <description>
       <short>
