@@ -152,6 +152,10 @@ that become false. Format: `path` `signature` - purpose.
   `text`, `invalidIssues`), `ConfigPage::groups()/messages()/leaderModes()` and `templates/shortcuts.html.twig`.
 - GLPI loads tab content by AJAX and runs a module script once per page: `config/watch.ts`
   `watchConfigForms(doc)` starts forms that arrive later and stops removed ones.
+- GLPI caches compiled Twig templates: after editing `templates/`, run `bin/console cache:clear` as `www-data` in
+  each container before e2e.
+- axe (`e2e/specs/accessibility.spec.ts`): scan only our selectors; a listbox may hold only options; the
+  `btn-outline-secondary` and `btn-primary` colours of the `darker` palette fail contrast (use plain `btn`).
 - "My settings" holds other forms with a `button[name="update"]`: scope e2e selectors to `form[data-tb-config]`.
 - `ConfigForm::fromPost` reports unusable shortcuts, it never drops them; `ConfigPage::describe` and the TS
   `check.ts` share the same message templates (`%s`, `%1$s`, `%2$s`), passed in `data-tb-messages`.

@@ -1,13 +1,13 @@
 # Project memory (max 250 lines, prune every session)
 
-Updated: 2026-11-25 | Version: unreleased (target 0.1.0) | Phase: 6a merged, 6b committed
+Updated: 2026-11-25 | Version: unreleased (target 0.1.0) | Phase: 7 in progress
 
 Live state for the next session. Keep it short and current; git keeps the history.
 Decisions go to `.agents/decisions/`, reusable knowledge to `.agents/KNOWLEDGE.md`.
 
 ## Current state (max 20)
 
-- `main` at `6d4e536` (Phases 0 to 5 and 6a merged, PRs #4 to #14; Dependabot exemption is ADR 0020).
+- `main` at `6647c1d` (Phases 0 to 6 merged, PRs #4 to #15; Dependabot exemption is ADR 0020).
   Release PR #3 `chore(main): release 0.1.0` stays open: do NOT merge it before Phase 7.
 - Phase 6 is split in two PRs (owner decision): 6a admin page, 6b user preference tab.
 - ADR 0019 (accepted): configuration pages load a second bundle `public/js/ticketboost-config.js`
@@ -21,22 +21,20 @@ Decisions go to `.agents/decisions/`, reusable knowledge to `.agents/KNOWLEDGE.m
 
 ## In progress (max 10)
 
-- Branch `feat/user-preferences` (from `main` at `6d4e536`), Phase 6b committed locally, NOT pushed:
-  personal settings tab (ADR 0021, accepted), watch of AJAX forms, locales, docs, seed user `tech-es`,
-  `e2e/specs/preferences.spec.ts`, and a fix of the admin page (deprecated `csrf_token()` on GLPI 12).
-- Verified 2026-11-25: `make check` (Vitest 341; PHPUnit 293 tests on GLPI 11 and 12, 98.39%) and e2e
-  156 passed (117 on glpi11-chromium, glpi12-chromium, glpi12-firefox; 39 on glpi12-webkit).
+- Branch `fix/accessibility` (from `main`), committed locally, NOT pushed: axe specs, two accessibility
+  fixes, `@axe-core/playwright`, seed user `tech-dark`, ADR 0022. Verified 2026-11-25: `make check` and
+  e2e 188 passed (141 chromium and firefox, 47 webkit).
+- Security review of the endpoints: session, rights, CSRF and input checks reviewed. One defect: the
+  8 KB body cap of `ajax/action.php` rejects solutions that `MAX_SOLUTION_LENGTH` (10000) allows.
 
 ## Next steps (max 20)
 
-1. Push `feat/user-preferences` and open the PR once the owner approves (PR title scope `config`).
-2. After the merge, Phase 7 (PLAN section 8): axe, cross-browser, security review of the endpoints, docs
-   with screenshots, marketplace metadata, release 0.1.0.
-3. Decide on `SolutionTemplate` support for the quick close (the plan mentions "text or template"; Phase 5
-   ships text only; the admin docs now say text).
-4. Check how the bundle behaves on the login page (it loads there; bootstrap answers 401
+1. Push `fix/accessibility` and open its PR once the owner approves; fix the body cap on
+   `fix/long-solution` (from `main`). Then docs with screenshots, marketplace metadata, release 0.1.0.
+   The repository stays public (owner, 2026-11-25).
+2. Check how the bundle behaves on the login page (it loads there; bootstrap answers 401
    and the panel stays `off`): decide whether to skip the request when there is no session.
-5. Verify branch protection on `main` once the owner saves it:
+3. Verify branch protection on `main` once the owner saves it:
    `gh api repos/scobjuan/ticketboost/rulesets` must list an active ruleset.
 
 ## Blockers and waiting on owner (max 10)
@@ -63,8 +61,6 @@ Decisions go to `.agents/decisions/`, reusable knowledge to `.agents/KNOWLEDGE.m
 
 ## Session log (max 40)
 
-- 2026-11-18 Full e2e run found test pollution (see In progress); seed made self-cleaning. Stopped at:
-  verifying with a second `make e2e`. Next: "Next steps" 0.
 - 2026-11-19 Found why `navigation.spec.ts:110` flaked: the self-service home fills the session list and two
   tickets share `date_mod`, so the order varied. Spec now asserts the set of visited ids; e2e green (78).
   WebKit showed the post-reload notice after 6.3 s (5 s default expect): `expect.timeout` is now 15 s.
@@ -75,7 +71,9 @@ Decisions go to `.agents/decisions/`, reusable knowledge to `.agents/KNOWLEDGE.m
   verified on all browsers and squash-merged as `6d4e536` (#14). Stopped at: start of Phase 6b.
   Next: "Next steps" 1.
 - 2026-11-25 Phase 6a merged as `6d4e536` (#14). Phase 6b implemented and verified on all browsers,
-  committed on `feat/user-preferences`. Stopped at: owner approval to push. Next: "Next steps" 1.
+  squash-merged as `6647c1d` (#15). Stopped at: start of Phase 7. Next: "Next steps" 1.
+- 2026-11-25 Phase 7 started: accessibility committed on `fix/accessibility`, endpoint review done.
+  Stopped at: owner approval to push. Next: "Next steps" 1.
 
 ## ADR index
 
