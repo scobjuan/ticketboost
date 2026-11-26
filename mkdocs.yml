@@ -9,6 +9,8 @@ copyright: Copyright 2026 Juan A. Escobar - GPLv3+
 
 theme:
   name: material
+  logo: assets/logo.png
+  favicon: assets/logo.png
   features:
     - navigation.sections
     - navigation.top

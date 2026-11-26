@@ -18,6 +18,8 @@ sets the defaults for the whole installation:
 Users can override the keyboard settings for themselves unless the plugin is disabled
 for their profile.
 
+![The administration page](../assets/screenshots/configuration.png)
+
 ## Changing a shortcut
 
 Each action has a field that shows its default as a placeholder. Leave it empty to keep

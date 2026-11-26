@@ -1,7 +1,5 @@
 # Leader key and panel
 
-**Planned for 0.1.0.**
-
 ## Opening the panel
 
 The panel opens when you **tap and release** the leader key (++ctrl++ by default)
@@ -27,6 +25,8 @@ Your administrator, and you in your [personal settings](personal-settings.md), c
 - ++esc++ goes back one level and closes the panel from the first level; ++backspace++
   also goes back (in a search field, only when it is empty). A click outside closes it.
 - ++question++ shows every shortcut.
+
+![The status sub-menu](../assets/screenshots/status.png)
 
 ## Keys the browser keeps
 

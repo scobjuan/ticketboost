@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="13 14 174 174" role="img" aria-label="TicketBoost">
+  <path d="M40 30 H160 Q184 30 184 54 V70 A22 22 0 0 0 184 114 V130 Q184 154 160 154 H40 Q16 154 16 130 V114 A22 22 0 0 0 16 70 V54 Q16 30 40 30 Z" transform="translate(0 18)" fill="#312E81"/>
+  <path d="M40 30 H160 Q184 30 184 54 V70 A22 22 0 0 0 184 114 V130 Q184 154 160 154 H40 Q16 154 16 130 V114 A22 22 0 0 0 16 70 V54 Q16 30 40 30 Z" fill="#4F46E5"/>
+  <path transform="translate(100 92) scale(0.96) translate(-101 -91)" d="M114 38 L62 102 H96 L86 144 L140 78 H105 Z" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="6" stroke-linejoin="round"/>
+</svg>
