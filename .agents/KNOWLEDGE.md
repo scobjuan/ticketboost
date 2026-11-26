@@ -63,7 +63,8 @@ that become false. Format: `path` `signature` - purpose.
 - `scripts/php-ci.sh` - the PHP gate (composer, parallel-lint, php-cs-fixer, PHPStan, Rector, DB install, PHPUnit + coverage); `STEPS=lint|test`, `DB_HOST`, `COVERAGE_MIN`.
 - `tools/coverage-check.php <clover.xml> <min>` - fails below the PHP coverage minimum.
 - `scripts/locales-compile.sh` - `.po` -> `.mo` plus regional copies (en_US, es_419, es_AR, es_CL, es_CO, es_EC, es_MX, es_VE).
-- `scripts/build-release.sh <version>` - allowlisted runtime files -> `dist/ticketboost-<version>.tar.bz2`.
+- `scripts/build-release.sh <version>` - allowlisted runtime files -> `dist/ticketboost-<version>.tar.bz2` and its
+  copy `dist/ticketboost.tar.bz2` (release-please rewrites one version per line, so `plugin.xml` links the copy).
 - `scripts/glpi-plugin.sh "<compose>" <services...>` - install + activate the plugin in running containers.
 - `scripts/glpi-wait.sh <urls...>` - wait for GLPI to answer.
 - `scripts/size-check.mjs` - 15 KB gzip budget for `public/js` + `public/css`.
