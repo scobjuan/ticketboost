@@ -209,6 +209,12 @@ that become false. Format: `path` `signature` - purpose.
 
 ## Tooling learnings
 
+- Right after a PR is opened `gh pr checks --watch` fails with "no checks reported": wait until
+  `gh run list --branch <branch>` returns an id, then use `gh run watch <id> --exit-status`.
+- Browsers never hand Ctrl+N (nor Ctrl+T, Ctrl+W) to a page, and Ctrl+letter held while the panel is open
+  keeps its browser meaning (by design: tap the leader, release, press the letter).
+- The full e2e run takes about 30 minutes: run it in the background and do not edit PHP, templates or
+  specs meanwhile (the containers mount the repository).
 - TypeScript 7 is not supported by typescript-eslint 8 (peer `<6.1`): TS is pinned to `~6.0`
   and `.github/dependabot.yml` ignores TS major updates; drop both once supported.
 - Dependabot pull request bodies quote upstream release notes with emojis: `ci.yml` checks only

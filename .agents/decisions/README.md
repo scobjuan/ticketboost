@@ -26,3 +26,4 @@ One decision per file. Never edit an accepted ADR to change its decision: write 
 | [0020](0020-dependabot-rule-exception.md)         | Dependabot pull requests are exempt from the authorship rules     | accepted           |
 | [0021](0021-personal-settings-access.md)          | Who may change the personal settings of a user                    | accepted           |
 | [0022](0022-quick-solution-text-only.md)          | The quick solution takes free text only                           | accepted           |
+| [0023](0023-fixed-name-release-archive.md)        | The release also publishes the archive under a fixed name         | proposed           |

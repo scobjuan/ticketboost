@@ -1,75 +1,73 @@
 # Project memory (max 250 lines, prune every session)
 
-Updated: 2026-11-25 | Version: unreleased (target 0.1.0) | Phase: 7 in progress
+Updated: 2026-11-25 | Version: unreleased (target 0.1.0) | Phase: 7, release pending
 
 Live state for the next session. Keep it short and current; git keeps the history.
 Decisions go to `.agents/decisions/`, reusable knowledge to `.agents/KNOWLEDGE.md`.
 
 ## Current state (max 20)
 
-- `main` at `6943bec` (Phases 0 to 6 merged; Phase 7: long solutions #16 and accessibility #17 merged).
-  Release PR #3 `chore(main): release 0.1.0` stays open: do NOT merge it before Phase 7 ends.
-- Phase 6 is split in two PRs (owner decision): 6a admin page, 6b user preference tab.
-- ADR 0019 (accepted): configuration pages load a second bundle `public/js/ticketboost-config.js`
-  (budget 10 KB gzip, 2.4 KB used; main bundle 9.1 of 15 KB). `pnpm build` runs both Vite configs
-  (`vite.config.ts`, `vite.settings.config.ts`); `scripts/size-check.mjs` checks both budgets.
-- Existing data layer reused by the UI: `PluginConfig`, `LeaderSettings`, `Preference`,
-  `KeymapResolver::issues()`; the bootstrap has no server cache, so settings apply on the next page load.
-- Use `Rights::has()` for `Session::haveRight()` (int in GLPI 11, bool in 12).
-- Commits must not carry `Co-Authored-By` trailers (RULES.md), even when the tool suggests one; commit
-  scopes are limited to the commitlint list. PR texts carry no tool footer either.
+- Phases done and merged: 0 to 5 (PRs #4 to #11), 6a admin page (#14), 6b personal settings (#15);
+  dev dependencies (#12) and the Dependabot exemption (#13, ADR 0020).
+- Phase 7 done: accessibility (#17), long solutions (#16), endpoint security review (no authorization or
+  validation finding besides the body cap). Docs, screenshots, owner logo, manifest (`beta`): PR #18 open.
+- Phase 7 pending: merge #18 and release 0.1.0. `main` is `6943bec`; release PR #3 is open, NOT merged.
+- Clean install check (2026-11-25, archive built from the #18 content before the logo change, version
+  0.0.0): install and activation on GLPI 11.0.12 and 12.0.1, e2e 192 passed, no plugin errors in the PHP
+  log, uninstall left no tables, settings or rights.
+- Facts the code relies on: two bundles (ADR 0019); use `Rights::has()` (int in GLPI 11, bool in 12);
+  settings apply on the next page load (no server cache).
+- Commits carry no `Co-Authored-By` trailers and PR texts no tool footer (RULES.md), even when a tool
+  suggests them; commit scopes are limited to the commitlint list.
 
 ## In progress (max 10)
 
-- Branch `docs/release-ready` (from `main`), committed locally, NOT pushed: logo and screenshots in
-  `docs/assets/`, marketplace metadata, `PluginManifestTest`, fixed-name release archive, docs without
-  the "Planned" marks. `make check` and `make release-dry` pass (2026-11-25).
+- PR #18 (`docs/release-ready`, `6607d5f`): every check passed except E2E, still running at session end.
+- Branch `docs/session-close` (local only, from `6607d5f`): these context notes and ADR 0023. The owner
+  chose a local commit without push. After #18 is merged, carry that commit to a branch from `main`.
 
 ## Next steps (max 20)
 
-1. Push `docs/release-ready` and open its PR once the owner approves (owner logo in place, `state` is
-   `beta`). Verify the release archive on a clean GLPI, then release 0.1.0 (playbook `release.md`,
-   merge PR #3 with approval). The repository stays public.
-2. Check how the bundle behaves on the login page (it loads there; bootstrap answers 401
-   and the panel stays `off`): decide whether to skip the request when there is no session.
-3. Verify branch protection on `main` once the owner saves it:
-   `gh api repos/scobjuan/ticketboost/rulesets` must list an active ruleset.
+1. Run `gh pr checks 18`. The owner approved these steps on 2026-11-25 and then ended the session, so ask
+   again before pushing, merging or publishing: squash-merge #18 (title only, blank body).
+2. Wait for release-please to update PR #3 (version 0.1.0), build the archive from that branch and verify
+   it on a clean GLPI (playbook `release.md`, step 5). Only the version should differ from the checked one.
+3. Merge PR #3 (publishes 0.1.0 and the docs; public, hard to undo), then install the published archive.
+4. Owner: submit `plugin.xml` to the GLPI marketplace; optionally set the repository homepage to the docs.
+5. Ask the owner to accept ADR 0023 (fixed-name copy of the release archive).
+6. After 0.1.0, candidates: skip the bootstrap request on the login page (it answers 401); delete the
+   preference row when a user is purged; `ActorSearch` scans at most 100 users and the assignee check
+   ignores account validity dates; solution templates (ADR 0022).
 
 ## Blockers and waiting on owner (max 10)
 
-- Branch protection on `main` is still not active (rulesets `[]` on 2026-11-12).
+- Branch protection on `main` is not active (rulesets `[]` on 2026-11-25).
 
 ## Open questions (max 10)
 
-- None.
+- None. Settled 2026-11-25: Ctrl+N and Ctrl+P held together run the browser action by design (tap Ctrl,
+  release, then the letter); the repository stays public; the quick close takes free text only.
 
 ## Environment status (max 15)
 
-- Host: Arch Linux (kernel 7.3.4), Node 24, pnpm 12.16.1, podman 6.1.4,
-  podman-compose 1.6.0, msgfmt; no PHP, no Docker. `make up` is running (GLPI 11 :8011,
-  GLPI 12 :8012) with the plugin installed.
-- Images pulled: mariadb:10.11, glpi/glpi:11.0.12 and 12.0.1, githubactions-glpi-apache
-  php-8.2-glpi-11.0.x and php-8.3-glpi-12.0.x, githubactions-mariadb:10.11,
-  playwright:v1.65.1-noble, mkdocs-material:9.8.1, actionlint:1.7.12.
+- Host: Arch Linux (kernel 7.3.4), Node 24, pnpm 12.16.1, podman 6.1.4, podman-compose 1.6.0, msgfmt; no
+  PHP, no Docker. Containers stopped at session end (data kept): `make up`, then `make install-plugin`.
+- Images pulled: mariadb:10.11, glpi/glpi:11.0.12 and 12.0.1, githubactions-glpi-apache php-8.2-glpi-11.0.x
+  and php-8.3-glpi-12.0.x, githubactions-mariadb:10.11, playwright:v1.65.1-noble, mkdocs-material:9.8.1,
+  actionlint:1.7.12.
 - Playwright browsers on the host: chromium, firefox (webkit needs `make e2e-container`).
-- Agent shells have no `SSH_AUTH_SOCK` and no agent socket under `~/.ssh/agent/`: push over
-  HTTPS with
+- Agent shells have no SSH agent socket: push over HTTPS with
   `git -c credential.helper= -c credential.helper='!gh auth git-credential' push https://github.com/scobjuan/ticketboost.git <branch>`.
 - A local agent link exists (created with `pnpm agents:link`, excluded via `.git/info/exclude`).
 
 ## Session log (max 40)
 
-- 2026-11-19 Phase 6a implemented on `feat/config-ui` (see In progress), uncommitted. Owner chose two PRs and a
-  separate bundle. Stopped at: webkit run of `config.spec.ts` pending, then commits. Next: "Next steps" 1.
-- 2026-11-25 PR #10 replaced by #12 and Dependabot exempted (#13, ADR 0020), both merged. Phase 6a
-  verified on all browsers and squash-merged as `6d4e536` (#14). Stopped at: start of Phase 6b.
-  Next: "Next steps" 1.
-- 2026-11-25 Phase 6a merged as `6d4e536` (#14). Phase 6b implemented and verified on all browsers,
-  squash-merged as `6647c1d` (#15). Stopped at: start of Phase 7. Next: "Next steps" 1.
-- 2026-11-25 Phase 7 started: accessibility and the body cap merged (#16, #17), endpoint review
-  done. Stopped at: docs and marketplace metadata. Next: "Next steps" 1.
-- 2026-11-25 Docs, screenshots and marketplace metadata committed on `docs/release-ready`. Stopped at:
-  owner approval to push. Next: "Next steps" 1.
+- 2026-11-19 Phase 6a implemented on `feat/config-ui`, uncommitted. Owner chose two PRs and a separate bundle.
+- 2026-11-25 Dependabot PR #10 replaced by #12 and exempted (#13). Phase 6a merged (#14).
+- 2026-11-25 Phase 6b implemented, verified on all browsers and merged (#15).
+- 2026-11-25 Phase 7: accessibility and body cap merged (#16, #17); owner decided ADR 0021 and 0022.
+- 2026-11-25 Release preparation in PR #18, checked on clean GLPI installs. Stopped at: owner ended the
+  session before merging. Next: "Next steps" 1.
 
 ## ADR index
 
