@@ -46,6 +46,12 @@ use function Safe\json_decode;
 final class ActionRouter
 {
     /**
+     * How much of a request body is read. It must hold the longest solution the actions accept
+     * (`TicketActionRequest::MAX_SOLUTION_LENGTH` characters, up to 6 bytes each in JSON).
+     */
+    public const MAX_BODY_BYTES = 65536;
+
+    /**
      * @param string $raw The JSON request body.
      */
     public static function respond(string $raw): JsonResponse

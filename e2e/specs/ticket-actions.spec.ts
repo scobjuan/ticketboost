@@ -69,6 +69,20 @@ test('C asks for a solution and solves the ticket', async ({ page }) => {
   ).toBeVisible()
 })
 
+test('C accepts a solution as long as the server allows', async ({ page }) => {
+  await openNewTicket(page, 'long solution')
+  // Just under the 10000 characters of the limit; the accents make it heavier in bytes.
+  const solution = `Reinstalled the driver ${'configuraci\u00f3n '.repeat(700)}end`
+
+  await leaderThen(page, 'c')
+  await page.locator('.tb-text__input').fill(solution)
+  await page.keyboard.press('Control+Enter')
+
+  await expect(
+    page.getByText('The solution was added to the ticket').first()
+  ).toBeVisible()
+})
+
 for (const [key, block, text] of [
   ['f', '#new-ITILFollowup-block', 'Called the requester'],
   ['t', '#new-TicketTask-block', 'Check the cabling']
