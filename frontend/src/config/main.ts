@@ -1,5 +1,5 @@
 import { safe } from '../core/safe'
-import { startConfigForm } from './form'
+import { watchConfigForms } from './watch'
 
 // Entry point of `ticketboost-config.js`, loaded only by the plugin configuration pages.
-safe(() => startConfigForm(document), null)
+safe(() => watchConfigForms(document), null)

@@ -194,3 +194,50 @@ describe('startConfigForm', () => {
     expect(press({ key: 'k', code: 'KeyK' }).defaultPrevented).toBe(false)
   })
 })
+
+describe('personal settings', () => {
+  const renderPersonal = (): void => {
+    render()
+    input('next').dataset.tbDefault = 'KeyJ'
+    input('previous').dataset.tbDefault = 'KeyP'
+    row('next').insertAdjacentHTML(
+      'beforeend',
+      '<input type="checkbox" data-tb-disable>'
+    )
+  }
+  const toggle = (): void => {
+    row('next').querySelector<HTMLInputElement>('[data-tb-disable]')!.click()
+  }
+  const type = (id: string, text: string): void => {
+    input(id).value = text
+    input(id).dispatchEvent(new Event('input'))
+  }
+
+  it('checks against the binding that applies to an empty field', () => {
+    renderPersonal()
+    start()
+
+    type('previous', 'KeyJ')
+
+    expect(feedback('previous')).toBe('KeyJ is already used by Next ticket')
+  })
+
+  it('frees the shortcut of a disabled action and locks its field', () => {
+    renderPersonal()
+    start()
+    type('previous', 'KeyJ')
+
+    toggle()
+
+    expect(feedback('previous')).toBe('')
+    expect(input('next').disabled).toBe(true)
+    expect(
+      row('next').querySelector('[data-tb-record]')!.hasAttribute('disabled')
+    ).toBe(true)
+
+    toggle()
+
+    expect(input('next').disabled).toBe(false)
+    expect(feedback('previous')).toBe('KeyJ is already used by Next ticket')
+  })
+})

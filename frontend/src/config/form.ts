@@ -48,14 +48,19 @@ export function readMessages(form: HTMLElement): ConfigMessages | null {
 }
 
 /**
- * Makes the shortcut fields of the administration page checkable and recordable: every
- * change is checked at once, and the Record button of a field fills it with the next key
- * pressed. The server checks again when the form is saved.
+ * Makes the shortcut fields of a configuration form checkable and recordable: every change
+ * is checked at once, and the Record button of a field fills it with the next key pressed.
+ * The server checks again when the form is saved.
  * @param doc The page document.
+ * @param form The form; the first one of the page when not given.
  * @returns A handle that stops the form, or null when the form was not found.
  */
-export function startConfigForm(doc: Document): ConfigFormHandle | null {
-  const form = doc.querySelector<HTMLFormElement>(FORM_SELECTOR)
+export function startConfigForm(
+  doc: Document,
+  form: HTMLFormElement | null = doc.querySelector<HTMLFormElement>(
+    FORM_SELECTOR
+  )
+): ConfigFormHandle | null {
   const messages = form ? readMessages(form) : null
   if (!form || messages === null) {
     return null
@@ -64,12 +69,24 @@ export function startConfigForm(doc: Document): ConfigFormHandle | null {
   const rows = [...form.querySelectorAll<HTMLElement>('[data-tb-action]')]
 
   const refresh = (note?: { row: HTMLElement; text: string }): void => {
-    const values: Record<string, string> = {}
+    const values: Record<string, string | null> = {}
+    const base: Record<string, string> = {}
     for (const row of rows) {
+      const action = row.dataset.tbAction ?? ''
       const input = row.querySelector<HTMLInputElement>('[data-tb-binding]')
-      values[row.dataset.tbAction ?? ''] = input?.value ?? ''
+      const off =
+        row.querySelector<HTMLInputElement>('[data-tb-disable]')?.checked ===
+        true
+      if (input) {
+        input.disabled = off
+        if (input.dataset.tbDefault !== undefined) {
+          base[action] = input.dataset.tbDefault
+        }
+      }
+      row.querySelector('[data-tb-record]')?.toggleAttribute('disabled', off)
+      values[action] = off ? null : (input?.value ?? '')
     }
-    const problems = checkFields(values, messages)
+    const problems = checkFields(values, messages, base)
     for (const row of rows) {
       const found = problems[row.dataset.tbAction ?? ''] ?? []
       const feedback = row.querySelector<HTMLElement>('[data-tb-feedback]')
@@ -120,6 +137,13 @@ export function startConfigForm(doc: Document): ConfigFormHandle | null {
       'input',
       () => {
         refresh()
+      },
+      { signal }
+    )
+    row.querySelector('[data-tb-disable]')?.addEventListener(
+      'change',
+      () => {
+        stop()
       },
       { signal }
     )
