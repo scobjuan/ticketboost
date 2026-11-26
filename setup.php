@@ -29,6 +29,7 @@
  */
 
 use GlpiPlugin\Ticketboost\Assets;
+use GlpiPlugin\Ticketboost\PreferenceTab;
 use GlpiPlugin\Ticketboost\ProfileTab;
 use GlpiPlugin\Ticketboost\Rights;
 
@@ -60,6 +61,7 @@ function plugin_init_ticketboost(): void
 
     Rights::exposeToSelfService();
     Plugin::registerClass(ProfileTab::class, ['addtabon' => Profile::class]);
+    Plugin::registerClass(PreferenceTab::class, ['addtabon' => [Preference::class, User::class]]);
 
     $assets = new Assets(__DIR__ . '/public');
     $PLUGIN_HOOKS['add_javascript_module']['ticketboost'] = $assets->scripts();

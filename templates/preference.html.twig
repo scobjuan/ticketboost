@@ -1,0 +1,85 @@
+{#
+ # TicketBoost plugin for GLPI. Personal settings.
+ #}
+<div class="container-fluid my-3">
+   <form method="post" action="{{ action }}" data-tb-config data-tb-messages="{{ messages|json_encode }}">
+      <input type="hidden" name="users_id" value="{{ users_id }}">
+
+      {% if issues|length > 0 %}
+         <div class="alert alert-danger" role="alert" data-tb-issues>
+            <strong>{{ __('The settings were not saved', 'ticketboost') }}</strong>
+            <ul class="mb-0">
+               {% for issue in issues %}<li>{{ issue }}</li>{% endfor %}
+            </ul>
+         </div>
+      {% endif %}
+      {% if stale|length > 0 %}
+         <div class="alert alert-warning" role="alert" data-tb-stale>
+            <strong>{{ __('Your shortcuts clash with the current defaults and are not applied until you change them.', 'ticketboost') }}</strong>
+            <ul class="mb-0">
+               {% for issue in stale %}<li>{{ issue }}</li>{% endfor %}
+            </ul>
+         </div>
+      {% endif %}
+
+      <label class="form-check form-switch mb-3">
+         <input class="form-check-input" type="checkbox" name="enabled" value="1"{{ enabled ? ' checked' }}>
+         <span class="form-check-label">{{ __('Use the keyboard shortcuts', 'ticketboost') }}</span>
+      </label>
+
+      <div class="card mb-3">
+         <div class="card-header"><h3 class="card-title">{{ __('Leader key', 'ticketboost') }}</h3></div>
+         <div class="card-body row g-3">
+            <p class="text-muted col-12 mb-0">{{ __('Leave a field on its default to follow the settings of the administrator.', 'ticketboost') }}</p>
+            <div class="col-md-3">
+               <label class="form-label" for="tb-leader-key">{{ __('Key', 'ticketboost') }}</label>
+               <select class="form-select" id="tb-leader-key" name="leader[key]">
+                  <option value="">{{ __('Default (%s)', 'ticketboost')|format(defaults.key) }}</option>
+                  {% for key in leader_keys %}
+                     <option value="{{ key }}"{{ key == (leader.key ?? '') ? ' selected' }}>{{ key }}</option>
+                  {% endfor %}
+               </select>
+            </div>
+            <div class="col-md-3">
+               <label class="form-label" for="tb-leader-mode">{{ __('Activation', 'ticketboost') }}</label>
+               <select class="form-select" id="tb-leader-mode" name="leader[mode]">
+                  <option value="">{{ __('Default (%s)', 'ticketboost')|format(leader_modes[defaults.mode]) }}</option>
+                  {% for mode, label in leader_modes %}
+                     <option value="{{ mode }}"{{ mode == (leader.mode ?? '') ? ' selected' }}>{{ label }}</option>
+                  {% endfor %}
+               </select>
+            </div>
+            <div class="col-md-3">
+               <label class="form-label" for="tb-leader-taps">{{ __('Number of taps', 'ticketboost') }}</label>
+               <input class="form-control" id="tb-leader-taps" type="number" min="1" max="3" name="leader[taps]" value="{{ leader.taps ?? '' }}" placeholder="{{ defaults.taps }}">
+            </div>
+            <div class="col-md-3">
+               <label class="form-label" for="tb-leader-tapmax">{{ __('Longest tap (ms)', 'ticketboost') }}</label>
+               <input class="form-control" id="tb-leader-tapmax" type="number" min="100" max="1000" name="leader[tapMaxMs]" value="{{ leader.tapMaxMs ?? '' }}" placeholder="{{ defaults.tapMaxMs }}">
+            </div>
+            <div class="col-md-3">
+               <label class="form-label" for="tb-leader-window">{{ __('Time between taps (ms)', 'ticketboost') }}</label>
+               <input class="form-control" id="tb-leader-window" type="number" min="100" max="1000" name="leader[tapWindowMs]" value="{{ leader.tapWindowMs ?? '' }}" placeholder="{{ defaults.tapWindowMs }}">
+            </div>
+            <div class="col-md-3">
+               <label class="form-label" for="tb-leader-hold">{{ __('Hold time (ms)', 'ticketboost') }}</label>
+               <input class="form-control" id="tb-leader-hold" type="number" min="200" max="2000" name="leader[holdMs]" value="{{ leader.holdMs ?? '' }}" placeholder="{{ defaults.holdMs }}">
+            </div>
+         </div>
+      </div>
+
+      <div class="card mb-3">
+         <div class="card-header"><h3 class="card-title">{{ __('Shortcuts', 'ticketboost') }}</h3></div>
+         <div class="card-body">
+            <p class="text-muted">{{ __('Leave a field empty to keep the default. Separate several shortcuts with commas.', 'ticketboost') }}</p>
+            {% include '@ticketboost/shortcuts.html.twig' %}
+         </div>
+      </div>
+
+      <button class="btn btn-primary" type="submit" name="update" value="1">{{ _x('button', 'Save') }}</button>
+      <button class="btn btn-outline-secondary" type="submit" name="restore" value="1" formnovalidate>{{ __('Restore defaults', 'ticketboost') }}</button>
+   {# GLPI closes the form and adds the CSRF token on the versions that use one. #}
+   {{ form_end|raw }}
+</div>
+
+<script type="module" src="{{ path('/plugins/ticketboost/js/ticketboost-config.js') }}"></script>

@@ -1,0 +1,27 @@
+{#
+ # TicketBoost plugin for GLPI. Shortcut fields shared by the configuration forms.
+ #}
+{% for group in groups %}
+   <h4 class="mt-3">{{ group.label }}</h4>
+   {% for action in group.actions %}
+      <div class="row g-2 align-items-start mb-2" data-tb-action="{{ action.id }}">
+         <label class="col-md-3 col-form-label" for="tb-key-{{ action.id }}">{{ action.label }}</label>
+         <div class="col-md-6">
+            <div class="input-group">
+               <input class="form-control{{ action.problems|length > 0 ? ' is-invalid' }}" id="tb-key-{{ action.id }}" type="text" name="keymap[{{ action.id }}]" value="{{ action.value }}" placeholder="{{ action.default }}" autocomplete="off" data-tb-binding data-tb-default="{{ action.default }}">
+               <button class="btn btn-outline-secondary" type="button" data-tb-record>{{ __('Record', 'ticketboost') }}</button>
+            </div>
+            {% for problem in action.problems %}<div class="invalid-feedback d-block">{{ problem }}</div>{% endfor %}
+            <div class="invalid-feedback d-block" data-tb-feedback></div>
+         </div>
+         {% if action.disabled is not null %}
+            <div class="col-md-3">
+               <label class="form-check col-form-label">
+                  <input class="form-check-input" type="checkbox" name="disabled[{{ action.id }}]" value="1"{{ action.disabled ? ' checked' }} data-tb-disable>
+                  <span class="form-check-label">{{ __('Disable', 'ticketboost') }}</span>
+               </label>
+            </div>
+         {% endif %}
+      </div>
+   {% endfor %}
+{% endfor %}
