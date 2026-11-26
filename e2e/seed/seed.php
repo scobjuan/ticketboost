@@ -40,6 +40,7 @@
  *
  *   tech1, tech2   Technician profile, password equal to the login
  *   tech-es        the same, with GLPI in Spanish
+ *   tech-dark      the same, with a dark colour palette
  *   [tb-seed] 1-6  tickets; 1-3 assigned to tech1, 4-5 to tech2, 6 unassigned;
  *                  1, 4 and 6 requested by the self-service account (post-only)
  */
@@ -107,6 +108,8 @@ $tech1    = seed_technician('tech1');
 $tech2    = seed_technician('tech2');
 // A technician who reads GLPI in Spanish.
 (new User())->update(['id' => seed_technician('tech-es'), 'language' => 'es_ES']);
+// A technician who uses a dark colour palette.
+(new User())->update(['id' => seed_technician('tech-dark'), 'palette' => 'darker']);
 $selfserv = seed_user_id('post-only');
 
 /**
