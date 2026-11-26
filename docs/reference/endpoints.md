@@ -31,6 +31,17 @@ CSRF protection is enforced by GLPI itself before the endpoint runs: GLPI 11 req
 session token in the `X-Glpi-Csrf-Token` header on POST requests, and GLPI 12 validates
 `Sec-Fetch-Site` and `Origin`. The bundle sends what each version needs.
 
+## Settings pages
+
+The settings are ordinary GLPI forms, not JSON endpoints. GLPI checks the CSRF protection
+of every POST before the page runs.
+
+| Page                         | Who may use it                                                      |
+| ---------------------------- | ------------------------------------------------------------------- |
+| `front/config.form.php`      | The configure right of the plugin                                   |
+| `front/profile.form.php`     | The right to update profiles                                        |
+| `front/preference.form.php`  | Own settings: the use right. Another user (`users_id`): configure right and the right to update that user, who may not have more rights |
+
 ## Bootstrap payload
 
 ```json
