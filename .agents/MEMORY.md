@@ -27,9 +27,9 @@ Decisions go to `.agents/decisions/`, reusable knowledge to `.agents/KNOWLEDGE.m
 
 ## Next steps (max 20)
 
-1. Push `docs/release-ready` and open its PR once the owner approves. Owner decisions before the
-   release: logo, and `state` in `plugin.xml` (still `alpha`). Then release 0.1.0 (playbook
-   `release.md`, merge PR #3 with approval). The repository stays public.
+1. Push `docs/release-ready` and open its PR once the owner approves (owner logo in place, `state` is
+   `beta`). Verify the release archive on a clean GLPI, then release 0.1.0 (playbook `release.md`,
+   merge PR #3 with approval). The repository stays public.
 2. Check how the bundle behaves on the login page (it loads there; bootstrap answers 401
    and the panel stays `off`): decide whether to skip the request when there is no session.
 3. Verify branch protection on `main` once the owner saves it:
