@@ -36,9 +36,10 @@
  * It is idempotent: users and tickets are found by login and by title. It also restores the
  * starting state, so a run never inherits the leftovers of the previous one: the tickets the
  * specs created (`[tb-e2e]`) are purged, the seeded tickets get their assignee and status back and the
- * plugin settings return to their defaults.
+ * plugin settings, including the personal ones, return to their defaults.
  *
  *   tech1, tech2   Technician profile, password equal to the login
+ *   tech-es        the same, with GLPI in Spanish
  *   [tb-seed] 1-6  tickets; 1-3 assigned to tech1, 4-5 to tech2, 6 unassigned;
  *                  1, 4 and 6 requested by the self-service account (post-only)
  */
@@ -104,6 +105,8 @@ function seed_technician(string $login): int
 
 $tech1    = seed_technician('tech1');
 $tech2    = seed_technician('tech2');
+// A technician who reads GLPI in Spanish.
+(new User())->update(['id' => seed_technician('tech-es'), 'language' => 'es_ES']);
 $selfserv = seed_user_id('post-only');
 
 /**
@@ -160,6 +163,9 @@ $tickets = [
 
 $purged = seed_purge_spec_tickets();
 Config::deleteConfigurationValues('plugin:ticketboost', ['leader', 'keymap', 'close_mode']);
+foreach (getAllDataFromTable('glpi_plugin_ticketboost_preferences') as $row) {
+    (new GlpiPlugin\Ticketboost\Preference())->delete(['id' => (int) $row['id']], true);
+}
 
 foreach ($tickets as $number => [$assignee, $requester]) {
     $title = '[tb-seed] ' . $number;

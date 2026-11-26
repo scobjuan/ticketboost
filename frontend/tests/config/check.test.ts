@@ -72,3 +72,27 @@ describe('checkFields', () => {
     )
   })
 })
+
+describe('checkFields with a base keymap', () => {
+  const messages = {
+    recording: '',
+    invalid: '%s is invalid',
+    reserved: '%s is reserved',
+    conflict: '%1$s is already used by %2$s',
+    actions: {}
+  }
+
+  it('uses the base binding of an empty field instead of the catalog one', () => {
+    const base = { next: 'KeyJ' }
+
+    expect(checkFields({ next: '', close: 'KeyN' }, messages, base)).toEqual({})
+    expect(checkFields({ next: '', close: 'KeyJ' }, messages, base)).toEqual({
+      next: ['KeyJ is already used by close'],
+      close: ['KeyJ is already used by next']
+    })
+  })
+
+  it('gives a disabled action no binding', () => {
+    expect(checkFields({ next: null, previous: 'KeyN' }, messages)).toEqual({})
+  })
+})

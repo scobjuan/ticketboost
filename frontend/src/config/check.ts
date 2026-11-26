@@ -35,20 +35,26 @@ export function splitBindings(text: string): string[] {
 }
 
 /**
- * Checks the shortcut fields the way the server does: a field left empty keeps the default
- * of its action, and the result must have no invalid, reserved or repeated shortcut.
- * @param fields Action id to the text typed for it.
+ * Checks the shortcut fields the way the server does: a field left empty keeps the binding
+ * that applies without it, a disabled action has none, and the result must have no invalid,
+ * reserved or repeated shortcut.
+ * @param fields Action id to the text typed for it, or null when the action is disabled.
  * @param messages Translated texts.
+ * @param base Action id to the text that applies to an empty field; catalog defaults otherwise.
  * @returns Action id to the problems found for it; actions without problems are absent.
  */
 export function checkFields(
-  fields: Readonly<Record<string, string>>,
-  messages: ConfigMessages
+  fields: Readonly<Record<string, string | null>>,
+  messages: ConfigMessages,
+  base: Readonly<Record<string, string>> = {}
 ): Record<string, string[]> {
   const keymap: Record<string, readonly string[]> = { ...defaultKeymap() }
+  for (const [action, text] of Object.entries(base)) {
+    keymap[action] = splitBindings(text)
+  }
   for (const [action, text] of Object.entries(fields)) {
-    const bindings = splitBindings(text)
-    if (bindings.length > 0) {
+    const bindings = text === null ? [] : splitBindings(text)
+    if (text === null || bindings.length > 0) {
       keymap[action] = bindings
     }
   }

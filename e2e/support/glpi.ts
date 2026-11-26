@@ -6,6 +6,7 @@ export const USERS = {
   tech: { login: 'tech', password: 'tech' },
   tech1: { login: 'tech1', password: 'tech1' },
   tech2: { login: 'tech2', password: 'tech2' },
+  spanish: { login: 'tech-es', password: 'tech-es' },
   normal: { login: 'normal', password: 'normal' },
   selfservice: { login: 'post-only', password: 'postonly' }
 } as const

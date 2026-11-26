@@ -272,3 +272,18 @@ msgstr "Leave a field empty to keep the default. Separate several shortcuts with
 
 msgid "Record"
 msgstr "Record"
+
+msgid "Disable"
+msgstr "Disable"
+
+msgid "Leave a field on its default to follow the settings of the administrator."
+msgstr "Leave a field on its default to follow the settings of the administrator."
+
+msgid "Default (%s)"
+msgstr "Default (%s)"
+
+msgid "Your shortcuts clash with the current defaults and are not applied until you change them."
+msgstr "Your shortcuts clash with the current defaults and are not applied until you change them."
+
+msgid "Restore defaults"
+msgstr "Restore defaults"

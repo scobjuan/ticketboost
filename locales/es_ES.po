@@ -272,3 +272,18 @@ msgstr "Deja un campo vacío para mantener el atajo por defecto. Separa varios a
 
 msgid "Record"
 msgstr "Grabar"
+
+msgid "Disable"
+msgstr "Desactivar"
+
+msgid "Leave a field on its default to follow the settings of the administrator."
+msgstr "Deja un campo en su valor por defecto para seguir la configuración del administrador."
+
+msgid "Default (%s)"
+msgstr "Por defecto (%s)"
+
+msgid "Your shortcuts clash with the current defaults and are not applied until you change them."
+msgstr "Tus atajos chocan con los valores por defecto actuales y no se aplican hasta que los cambies."
+
+msgid "Restore defaults"
+msgstr "Restaurar valores por defecto"

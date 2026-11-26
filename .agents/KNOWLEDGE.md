@@ -143,8 +143,16 @@ that become false. Format: `path` `signature` - purpose.
 ## Configuration UI
 
 - The admin page is `front/config.form.php` (hook `config_page`), rendered with
-  `TemplateRenderer::getInstance()->display('@ticketboost/config.html.twig', ...)`. In Twig `csrf_token()` and
-  `path('/plugins/ticketboost/js/...')` work on GLPI 11 and 12; `Session::checkRight` answers 403.
+  `TemplateRenderer::getInstance()->display('@ticketboost/config.html.twig', ...)`. In Twig
+  `path('/plugins/ticketboost/js/...')` works on GLPI 11 and 12; `Session::checkRight` answers 403.
+- Never call `csrf_token()` in Twig: it is deprecated in GLPI 12 and `DbTestCase` fails on the log entry. Pass
+  `'form_end' => Html::closeForm(false)` and print `{{ form_end|raw }}`: it adds the token only where needed.
+- Personal settings: `PreferenceTab` (`canManage($users_id)`, `show()`; ADR 0021), `Config\PreferenceForm::fromPost`,
+  `Config\PreferencePage::params`, `front/preference.form.php`; shared pieces `Keymap\ShortcutFields` (`layer`,
+  `text`, `invalidIssues`), `ConfigPage::groups()/messages()/leaderModes()` and `templates/shortcuts.html.twig`.
+- GLPI loads tab content by AJAX and runs a module script once per page: `config/watch.ts`
+  `watchConfigForms(doc)` starts forms that arrive later and stops removed ones.
+- "My settings" holds other forms with a `button[name="update"]`: scope e2e selectors to `form[data-tb-config]`.
 - `ConfigForm::fromPost` reports unusable shortcuts, it never drops them; `ConfigPage::describe` and the TS
   `check.ts` share the same message templates (`%s`, `%1$s`, `%2$s`), passed in `data-tb-messages`.
 - PHPStan: `Safe\preg_split` returns an untyped `array` (filter with `is_string`), and numeric string keys become

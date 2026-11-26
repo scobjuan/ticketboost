@@ -24,3 +24,4 @@ One decision per file. Never edit an accepted ADR to change its decision: write 
 | [0018](0018-request-security-and-panel-scope.md)  | Request security, self-service rights and panel scope             | accepted |
 | [0019](0019-separate-config-bundle.md)            | Configuration pages load a separate bundle                        | accepted |
 | [0020](0020-dependabot-rule-exception.md)         | Dependabot pull requests are exempt from the authorship rules     | accepted |
+| [0021](0021-personal-settings-access.md)          | Who may change the personal settings of a user                    | accepted |

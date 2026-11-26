@@ -1,15 +1,14 @@
 # Project memory (max 250 lines, prune every session)
 
-Updated: 2026-11-25 | Version: unreleased (target 0.1.0) | Phase: 5 merged, Phase 6a committed
+Updated: 2026-11-25 | Version: unreleased (target 0.1.0) | Phase: 6a merged, 6b committed
 
 Live state for the next session. Keep it short and current; git keeps the history.
 Decisions go to `.agents/decisions/`, reusable knowledge to `.agents/KNOWLEDGE.md`.
 
 ## Current state (max 20)
 
-- `main` at `2c13604` (Phases 0 to 5 merged, PRs #4 to #11; dev dependencies #12; Dependabot
-  exemption #13, ADR 0020). Release PR #3
-  `chore(main): release 0.1.0` stays open: do NOT merge it before Phase 7.
+- `main` at `6d4e536` (Phases 0 to 5 and 6a merged, PRs #4 to #14; Dependabot exemption is ADR 0020).
+  Release PR #3 `chore(main): release 0.1.0` stays open: do NOT merge it before Phase 7.
 - Phase 6 is split in two PRs (owner decision): 6a admin page, 6b user preference tab.
 - ADR 0019 (accepted): configuration pages load a second bundle `public/js/ticketboost-config.js`
   (budget 10 KB gzip, 2.4 KB used; main bundle 9.1 of 15 KB). `pnpm build` runs both Vite configs
@@ -22,17 +21,17 @@ Decisions go to `.agents/decisions/`, reusable knowledge to `.agents/KNOWLEDGE.m
 
 ## In progress (max 10)
 
-- Branch `feat/config-ui` (from `main` at `2c13604`), Phase 6a committed locally, NOT pushed: admin page
-  (PHP, Twig, `frontend/src/config/`), ADR 0019, locales, docs, seed reset, `e2e/specs/config.spec.ts`.
-- Verified 2026-11-25: `make check` (Vitest 333, 99%; PHPUnit 274 tests on GLPI 11 and 12, 98.26%) and
-  e2e 128 passed (96 on glpi11-chromium, glpi12-chromium, glpi12-firefox; 32 on glpi12-webkit).
+- Branch `feat/user-preferences` (from `main` at `6d4e536`), Phase 6b committed locally, NOT pushed:
+  personal settings tab (ADR 0021, accepted), watch of AJAX forms, locales, docs, seed user `tech-es`,
+  `e2e/specs/preferences.spec.ts`, and a fix of the admin page (deprecated `csrf_token()` on GLPI 12).
+- Verified 2026-11-25: `make check` (Vitest 341; PHPUnit 293 tests on GLPI 11 and 12, 98.39%) and e2e
+  156 passed (117 on glpi11-chromium, glpi12-chromium, glpi12-firefox; 39 on glpi12-webkit).
 
 ## Next steps (max 20)
 
-1. Push `feat/config-ui` and open the PR once the owner approves (PR title scope `config`).
-2. Phase 6b: tab on the user preferences (`Preference` already stores `enabled`, `leader`, `keymap`), reusing
-   `frontend/src/config/` and `KeymapResolver::issues($admin, $user)`; e2e including the Spanish UI
-   (set the language of a seeded user to `es_ES`); restore defaults button.
+1. Push `feat/user-preferences` and open the PR once the owner approves (PR title scope `config`).
+2. After the merge, Phase 7 (PLAN section 8): axe, cross-browser, security review of the endpoints, docs
+   with screenshots, marketplace metadata, release 0.1.0.
 3. Decide on `SolutionTemplate` support for the quick close (the plan mentions "text or template"; Phase 5
    ships text only; the admin docs now say text).
 4. Check how the bundle behaves on the login page (it loads there; bootstrap answers 401
@@ -64,9 +63,6 @@ Decisions go to `.agents/decisions/`, reusable knowledge to `.agents/KNOWLEDGE.m
 
 ## Session log (max 40)
 
-- 2026-11-16 Phase 5 implemented on `feat/ticket-actions`. Found on real GLPI: the followup editor must be
-  focused only after TinyMCE initializes; self-service reached the status check (now 403 first).
-  Stopped at: full e2e run, then owner approval to push. Next: "Next steps" 1.
 - 2026-11-18 Full e2e run found test pollution (see In progress); seed made self-cleaning. Stopped at:
   verifying with a second `make e2e`. Next: "Next steps" 0.
 - 2026-11-19 Found why `navigation.spec.ts:110` flaked: the self-service home fills the session list and two
@@ -76,7 +72,10 @@ Decisions go to `.agents/decisions/`, reusable knowledge to `.agents/KNOWLEDGE.m
 - 2026-11-19 Phase 6a implemented on `feat/config-ui` (see In progress), uncommitted. Owner chose two PRs and a
   separate bundle. Stopped at: webkit run of `config.spec.ts` pending, then commits. Next: "Next steps" 1.
 - 2026-11-25 PR #10 replaced by #12 and Dependabot exempted (#13, ADR 0020), both merged. Phase 6a
-  verified on all browsers and committed. Stopped at: owner approval to push. Next: "Next steps" 1.
+  verified on all browsers and squash-merged as `6d4e536` (#14). Stopped at: start of Phase 6b.
+  Next: "Next steps" 1.
+- 2026-11-25 Phase 6a merged as `6d4e536` (#14). Phase 6b implemented and verified on all browsers,
+  committed on `feat/user-preferences`. Stopped at: owner approval to push. Next: "Next steps" 1.
 
 ## ADR index
 
