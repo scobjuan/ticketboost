@@ -24,9 +24,16 @@ Playwright projects combine a GLPI version and a browser: `glpi11-chromium`,
 `pnpm e2e --project=glpi11-chromium`. Helpers live in `e2e/support/`.
 
 The specs rely on seeded data: users `tech1` and `tech2` (Technician profile, password equal
-to the login) and six tickets titled `[tb-seed] 1` to `[tb-seed] 6`. `make seed` creates
+to the login), `tech-es` (GLPI in Spanish), `tech-dark` (dark palette) and six tickets titled `[tb-seed] 1` to `[tb-seed] 6`. `make seed` creates
 them in both containers and is idempotent; `make e2e` runs it first, and CI runs
 `scripts/glpi-seed.sh` before Playwright.
+
+## Accessibility
+
+`e2e/specs/accessibility.spec.ts` runs axe (WCAG 2.1 A and AA) on the panel, its views, the
+messages and both settings forms, in the default and a dark palette, and checks the focus trap
+and reduced motion. Only the markup of TicketBoost is scanned. In the dark palette GLPI's own
+primary button is left out, because its colours come from GLPI.
 
 ## Rules
 

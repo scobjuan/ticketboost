@@ -397,6 +397,10 @@ describe('createModal pickers', () => {
       'Nothing found'
     )
     expect(input().hasAttribute('aria-activedescendant')).toBe(false)
+    // A listbox may only hold options, so the message is a disabled one.
+    const message = document.querySelector('.tb-picker__empty')
+    expect(message?.getAttribute('role')).toBe('option')
+    expect(message?.getAttribute('aria-disabled')).toBe('true')
     modal.handleKey(key({ key: 'ArrowDown' }))
     modal.handleKey(key({ key: 'Enter' }))
     expect(view.submit).not.toHaveBeenCalled()

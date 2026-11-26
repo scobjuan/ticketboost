@@ -32,7 +32,7 @@ Repo: github.com/scobjuan/ticketboost (exists, empty, private). Local: /home/jue
 | Next/previous  | Circular over GLPI session list `$_SESSION['glpilistitems']['Ticket']` (last -> first, first -> last). Fallback: "my unresolved tickets" by priority desc, date asc, with a discreet notice |
 | Interfaces     | Central and self-service; every action filtered by the user's native rights                                                                                                                 |
 | Customization  | Admin defaults + per-profile enablement right; per-user remap/disable with conflict detection                                                                                               |
-| Close action   | Admin-configurable mode: `quick_solution` (inline solution text or template -> ITILSolution, GLPI's normal flow) or `direct_close` (status Closed when rights allow)                        |
+| Close action   | Admin-configurable mode: `quick_solution` (inline solution text -> ITILSolution, GLPI's normal flow; templates out of 0.1.0, ADR 0022) or `direct_close` (status Closed when rights allow)  |
 | Name           | Display "TicketBoost", key `ticketboost`, namespace `GlpiPlugin\Ticketboost`. Tagline: "Keyboard shortcuts for faster ticket handling in GLPI"                                              |
 | License        | GPLv3+                                                                                                                                                                                      |
 | Frontend       | TypeScript strict, no framework, Vite -> single ES module + prefixed CSS, zero runtime deps, budget < 15 KB gzip                                                                            |
@@ -113,17 +113,17 @@ Repo: github.com/scobjuan/ticketboost (exists, empty, private). Local: /home/jue
 
 ### 3.4 Server actions (PHP, each re-checks rights server-side)
 
-| Action             | GLPI implementation                                                                               | Right checks                                        |
-| ------------------ | ------------------------------------------------------------------------------------------------- | --------------------------------------------------- |
-| assign_me          | `Ticket_User` add type ASSIGN for current user                                                    | `Ticket::ASSIGN` or `Ticket::OWN` + `canUpdateItem` |
-| assign_other       | `Ticket_User` / `Group_Ticket` add ASSIGN                                                         | `Ticket::ASSIGN`                                    |
-| unassign_me        | delete own `Ticket_User` ASSIGN link                                                              | `canUpdateItem`                                     |
-| unassign_others    | delete selected `Ticket_User`/`Group_Ticket` ASSIGN links                                         | `Ticket::ASSIGN`                                    |
-| change_status      | `Ticket::update(['status' => n])`, only statuses allowed by `Ticket::getAllowedStatusArray`       | `canUpdateItem`                                     |
-| close              | `quick_solution`: `ITILSolution::add` (text or `SolutionTemplate`); `direct_close`: status CLOSED | solution rights / `Ticket::isAllowedStatus`         |
-| change_priority    | `Ticket::update(['priority' => n])`                                                               | `Ticket::CHANGEPRIORITY`                            |
-| navigate           | compute next/prev/list URL from `glpilistitems` with wrap + fallback query                        | `Ticket::canView`, per item `canViewItem`           |
-| search_assignables | users with `own_ticket` right in ticket entity; groups with `is_assign`                           | `Ticket::ASSIGN`                                    |
+| Action             | GLPI implementation                                                                         | Right checks                                        |
+| ------------------ | ------------------------------------------------------------------------------------------- | --------------------------------------------------- |
+| assign_me          | `Ticket_User` add type ASSIGN for current user                                              | `Ticket::ASSIGN` or `Ticket::OWN` + `canUpdateItem` |
+| assign_other       | `Ticket_User` / `Group_Ticket` add ASSIGN                                                   | `Ticket::ASSIGN`                                    |
+| unassign_me        | delete own `Ticket_User` ASSIGN link                                                        | `canUpdateItem`                                     |
+| unassign_others    | delete selected `Ticket_User`/`Group_Ticket` ASSIGN links                                   | `Ticket::ASSIGN`                                    |
+| change_status      | `Ticket::update(['status' => n])`, only statuses allowed by `Ticket::getAllowedStatusArray` | `canUpdateItem`                                     |
+| close              | `quick_solution`: `ITILSolution::add` (text, ADR 0022); `direct_close`: status CLOSED       | solution rights / `Ticket::isAllowedStatus`         |
+| change_priority    | `Ticket::update(['priority' => n])`                                                         | `Ticket::CHANGEPRIORITY`                            |
+| navigate           | compute next/prev/list URL from `glpilistitems` with wrap + fallback query                  | `Ticket::canView`, per item `canViewItem`           |
+| search_assignables | users with `own_ticket` right in ticket entity; groups with `is_assign`                     | `Ticket::ASSIGN`                                    |
 
 - Use GLPI APIs only (CommonDBTM, `DBmysqlIterator`); no raw SQL. All responses JSON
   `{ok, message, data, redirect?}` with translated messages.

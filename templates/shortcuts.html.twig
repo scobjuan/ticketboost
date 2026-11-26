@@ -9,7 +9,7 @@
          <div class="col-md-6">
             <div class="input-group">
                <input class="form-control{{ action.problems|length > 0 ? ' is-invalid' }}" id="tb-key-{{ action.id }}" type="text" name="keymap[{{ action.id }}]" value="{{ action.value }}" placeholder="{{ action.default }}" autocomplete="off" data-tb-binding data-tb-default="{{ action.default }}">
-               <button class="btn btn-outline-secondary" type="button" data-tb-record>{{ __('Record', 'ticketboost') }}</button>
+               <button class="btn" type="button" data-tb-record>{{ __('Record', 'ticketboost') }}</button>
             </div>
             {% for problem in action.problems %}<div class="invalid-feedback d-block">{{ problem }}</div>{% endfor %}
             <div class="invalid-feedback d-block" data-tb-feedback></div>
