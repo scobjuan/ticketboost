@@ -312,9 +312,17 @@ export function createModal(doc: Document, t: Translate): Modal {
   ): void => {
     if (state.results.length === 0) {
       replaceChildren(state.list, [
-        h(doc, 'li', { class: 'tb-picker__empty', role: 'presentation' }, [
-          t(emptyKey)
-        ])
+        h(
+          doc,
+          'li',
+          {
+            class: 'tb-picker__empty',
+            role: 'option',
+            'aria-disabled': 'true',
+            'aria-selected': 'false'
+          },
+          [t(emptyKey)]
+        )
       ])
       state.input.removeAttribute('aria-activedescendant')
       return
