@@ -269,3 +269,18 @@ msgstr ""
 
 msgid "Record"
 msgstr ""
+
+msgid "Disable"
+msgstr ""
+
+msgid "Leave a field on its default to follow the settings of the administrator."
+msgstr ""
+
+msgid "Default (%s)"
+msgstr ""
+
+msgid "Your shortcuts clash with the current defaults and are not applied until you change them."
+msgstr ""
+
+msgid "Restore defaults"
+msgstr ""
