@@ -3,7 +3,6 @@
  #}
 <div class="container-fluid my-3">
    <form method="post" action="{{ action }}" data-tb-config data-tb-messages="{{ messages|json_encode }}">
-      <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}">
 
       {% if issues|length > 0 %}
          <div class="alert alert-danger" role="alert" data-tb-issues>
@@ -88,7 +87,8 @@
       </div>
 
       <button class="btn btn-primary" type="submit" name="update" value="1">{{ _x('button', 'Save') }}</button>
-   </form>
+   {# GLPI closes the form and adds the CSRF token on the versions that use one. #}
+   {{ form_end|raw }}
 </div>
 
 <script type="module" src="{{ path('/plugins/ticketboost/js/ticketboost-config.js') }}"></script>

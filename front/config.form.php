@@ -56,6 +56,7 @@ if (isset($_POST['update'])) {
 
 Html::header(__('TicketBoost', 'ticketboost'), $_SERVER['PHP_SELF'], 'config', 'plugins');
 TemplateRenderer::getInstance()->display('@ticketboost/config.html.twig', [
-    'action' => Html::getPrefixedUrl('/plugins/ticketboost/front/config.form.php'),
+    'action'   => Html::getPrefixedUrl('/plugins/ticketboost/front/config.form.php'),
+    'form_end' => Html::closeForm(false),
 ] + ConfigPage::params($config, $typed, $issues));
 Html::footer();
