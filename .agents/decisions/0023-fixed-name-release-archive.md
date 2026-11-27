@@ -1,7 +1,7 @@
 ---
 id: 0023
 title: The release also publishes the archive under a fixed name
-status: proposed
+status: accepted
 date: 2026-11-25
 ---
 

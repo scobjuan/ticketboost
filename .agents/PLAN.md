@@ -137,7 +137,8 @@ Repo: github.com/scobjuan/ticketboost (exists, empty, private). Local: /home/jue
   leader JSON, keymap JSON, date_mod). Tab on Preference/User pages with a key recorder
   and live conflict detection (shared rules implemented in TS and PHP, both tested).
 - Bootstrap payload (rights-filtered catalog, effective keymap, translated labels, CSRF
-  handling) served by `ajax/bootstrap.php` and cached per session.
+  handling) served by `ajax/bootstrap.php`, built on every request and never cached
+  (ADR 0024).
 
 ### 3.6 i18n
 
@@ -154,14 +155,16 @@ ticketboost/
   setup.php  hook.php  plugin.xml  composer.json  package.json  Makefile  compose.yaml
   ajax/                 bootstrap.php, action.php, navigate.php, search.php
   front/                config.form.php (admin), preference.form.php
-  src/                  PHP, PSR-4 GlpiPlugin\Ticketboost\
-    Action/             ActionInterface, ActionRegistry, AssignMe, AssignOther, UnassignMe,
-                        UnassignOthers, ChangeStatus, Close, ChangePriority
-    Navigation/         TicketNavigator (wrap + fallback)
-    Keymap/             Keymap, KeymapValidator, ConflictDetector, DefaultKeymap
-    Config/             PluginConfig, UserPreference, ProfileRight
-    Http/               JsonResponse, RequestGuard (CSRF/session/rights)
-    Install/            Installer, Migration steps per version
+  src/                  PHP, PSR-4 GlpiPlugin\Ticketboost\, grouped by feature (ADR 0024)
+    Action/             ActionRouter
+    Assignment/         Assigner, ActorSearch, requests
+    Ticketing/          TicketActions (status, priority, close)
+    Navigation/         Navigator, ListWalker (wrap + fallback)
+    Keymap/             ActionCatalog, KeymapValidator, KeymapResolver
+    Config/             PluginConfig, LeaderSettings, configuration pages and forms
+    Bootstrap/          Payload, Labels, ActionAvailability, Options
+    Http/               JsonResponse, RequestGuard (session/method/rights)
+    Install/            Installer
   templates/            Twig for config/preference tabs
   frontend/src/         TS: keys/, keymap/, ui/, actions/, api/, editor/, context/, i18n/
   public/               build output only: js/ticketboost.js, css/ticketboost.css
