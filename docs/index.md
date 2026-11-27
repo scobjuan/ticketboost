@@ -7,9 +7,7 @@ change the status, close it, open the next one. TicketBoost puts those actions b
 the keyboard. Tap ++ctrl++, a compact panel shows the available shortcuts, and a single
 key does the job.
 
-!!! info "Project status"
-    TicketBoost is under active development towards its first release (0.1.0). Pages
-    marked **Planned** describe behavior that is specified but not released yet.
+![The shortcut panel open on a ticket](assets/screenshots/panel.png)
 
 ## Highlights
 

@@ -10,10 +10,9 @@ Handling a ticket in GLPI takes many clicks: leave the ticket, assign someone, c
 status, close it, open the next one. With TicketBoost you tap **Ctrl**, a compact panel
 shows the available shortcuts, and a single key does the job.
 
-> Status: under development towards 0.1.0. The plan and progress are public in
-> [.agents/PLAN.md](.agents/PLAN.md) and [.agents/MEMORY.md](.agents/MEMORY.md).
+![The shortcut panel open on a ticket](docs/assets/screenshots/panel.png)
 
-## Features (0.1.0)
+## Features
 
 | Key (after tapping Ctrl) | Action                                                      |
 | ------------------------ | ----------------------------------------------------------- |

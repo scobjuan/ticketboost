@@ -20,8 +20,8 @@
 
 ## From the GLPI marketplace
 
-**Planned.** Once published, TicketBoost can be installed from **Setup > Plugins >
-Marketplace**.
+Once TicketBoost is listed in the marketplace, it can also be installed from **Setup >
+Plugins > Marketplace**.
 
 ## From source
 

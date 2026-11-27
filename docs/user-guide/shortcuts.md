@@ -1,6 +1,6 @@
 # Shortcuts
 
-**Planned for 0.1.0.** Default bindings, pressed after opening the panel with the
+Default bindings, pressed after opening the panel with the
 leader key. Every binding can be changed.
 
 | Key                      | Action                                                                  | Where    | Self-service |
@@ -53,6 +53,8 @@ already assigned are not offered again. Closed and deleted tickets cannot be cha
 Which of these you see depends on your profile: assigning to others needs the GLPI right
 to assign tickets; assigning yourself needs the right to own or steal tickets.
 
+![Searching for someone to assign](../assets/screenshots/assign.png)
+
 ## Changing the ticket
 
 Like the assignment actions, these work on the open ticket, reload it when they finish and
@@ -68,3 +70,5 @@ with the matching GLPI right.
 | ++t++  | The same for a task                                                                                                  |
 
 The solution is stored as plain text. Solution templates are not offered yet.
+
+![Writing the solution that closes a ticket](../assets/screenshots/solution.png)

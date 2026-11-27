@@ -17,5 +17,6 @@ Releases are automatic; humans and agents only merge.
 5. Verify: the release page has the archive; install it on a clean GLPI 11 and 12
    (`make reset up`, extract into the container plugins dir, activate).
 6. Marketplace: the owner submits or updates the plugin on the GLPI marketplace using
-   `plugin.xml` (raw URL on `main`).
+   `plugin.xml` (raw URL on `main`). Its logo and screenshots live in `docs/assets/`; the
+   download address points to `ticketboost.tar.bz2`, the fixed-name copy of the archive.
    Never create tags or releases by hand.

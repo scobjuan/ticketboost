@@ -10,6 +10,8 @@ In **My settings > TicketBoost** each user whose profile can use the plugin can:
 A field left on its default follows the administrator: if the defaults change later, you
 get the new value. Only what you fill in is stored as your own.
 
+![The personal settings tab](../assets/screenshots/personal-settings.png)
+
 ## Changing a shortcut
 
 Each field shows the current default as a placeholder. Leave it empty to keep it, or type

@@ -7,8 +7,8 @@ Decisions go to `.agents/decisions/`, reusable knowledge to `.agents/KNOWLEDGE.m
 
 ## Current state (max 20)
 
-- `main` at `6647c1d` (Phases 0 to 6 merged, PRs #4 to #15; Dependabot exemption is ADR 0020).
-  Release PR #3 `chore(main): release 0.1.0` stays open: do NOT merge it before Phase 7.
+- `main` at `6943bec` (Phases 0 to 6 merged; Phase 7: long solutions #16 and accessibility #17 merged).
+  Release PR #3 `chore(main): release 0.1.0` stays open: do NOT merge it before Phase 7 ends.
 - Phase 6 is split in two PRs (owner decision): 6a admin page, 6b user preference tab.
 - ADR 0019 (accepted): configuration pages load a second bundle `public/js/ticketboost-config.js`
   (budget 10 KB gzip, 2.4 KB used; main bundle 9.1 of 15 KB). `pnpm build` runs both Vite configs
@@ -21,17 +21,15 @@ Decisions go to `.agents/decisions/`, reusable knowledge to `.agents/KNOWLEDGE.m
 
 ## In progress (max 10)
 
-- Branch `fix/accessibility` (from `main`), committed locally, NOT pushed: axe specs, two accessibility
-  fixes, `@axe-core/playwright`, seed user `tech-dark`, ADR 0022. Verified 2026-11-25: `make check` and
-  e2e 188 passed (141 chromium and firefox, 47 webkit).
-- Security review of the endpoints: session, rights, CSRF and input checks reviewed. One defect: the
-  8 KB body cap of `ajax/action.php` rejects solutions that `MAX_SOLUTION_LENGTH` (10000) allows.
+- Branch `docs/release-ready` (from `main`), committed locally, NOT pushed: logo and screenshots in
+  `docs/assets/`, marketplace metadata, `PluginManifestTest`, fixed-name release archive, docs without
+  the "Planned" marks. `make check` and `make release-dry` pass (2026-11-25).
 
 ## Next steps (max 20)
 
-1. Push `fix/accessibility` and open its PR once the owner approves; fix the body cap on
-   `fix/long-solution` (from `main`). Then docs with screenshots, marketplace metadata, release 0.1.0.
-   The repository stays public (owner, 2026-11-25).
+1. Push `docs/release-ready` and open its PR once the owner approves (owner logo in place, `state` is
+   `beta`). Verify the release archive on a clean GLPI, then release 0.1.0 (playbook `release.md`,
+   merge PR #3 with approval). The repository stays public.
 2. Check how the bundle behaves on the login page (it loads there; bootstrap answers 401
    and the panel stays `off`): decide whether to skip the request when there is no session.
 3. Verify branch protection on `main` once the owner saves it:
@@ -61,10 +59,6 @@ Decisions go to `.agents/decisions/`, reusable knowledge to `.agents/KNOWLEDGE.m
 
 ## Session log (max 40)
 
-- 2026-11-19 Found why `navigation.spec.ts:110` flaked: the self-service home fills the session list and two
-  tickets share `date_mod`, so the order varied. Spec now asserts the set of visited ids; e2e green (78).
-  WebKit showed the post-reload notice after 6.3 s (5 s default expect): `expect.timeout` is now 15 s.
-  PR #11 (Phase 5) passed CI and was squash-merged as `b75a6e4`.
 - 2026-11-19 Phase 6a implemented on `feat/config-ui` (see In progress), uncommitted. Owner chose two PRs and a
   separate bundle. Stopped at: webkit run of `config.spec.ts` pending, then commits. Next: "Next steps" 1.
 - 2026-11-25 PR #10 replaced by #12 and Dependabot exempted (#13, ADR 0020), both merged. Phase 6a
@@ -72,8 +66,10 @@ Decisions go to `.agents/decisions/`, reusable knowledge to `.agents/KNOWLEDGE.m
   Next: "Next steps" 1.
 - 2026-11-25 Phase 6a merged as `6d4e536` (#14). Phase 6b implemented and verified on all browsers,
   squash-merged as `6647c1d` (#15). Stopped at: start of Phase 7. Next: "Next steps" 1.
-- 2026-11-25 Phase 7 started: accessibility committed on `fix/accessibility`, endpoint review done.
-  Stopped at: owner approval to push. Next: "Next steps" 1.
+- 2026-11-25 Phase 7 started: accessibility and the body cap merged (#16, #17), endpoint review
+  done. Stopped at: docs and marketplace metadata. Next: "Next steps" 1.
+- 2026-11-25 Docs, screenshots and marketplace metadata committed on `docs/release-ready`. Stopped at:
+  owner approval to push. Next: "Next steps" 1.
 
 ## ADR index
 
