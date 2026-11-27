@@ -4,6 +4,7 @@
   --tb-radius: 0.5rem;
   --tb-surface: var(--tblr-bg-surface, #fff);
   --tb-text: var(--tblr-body-color, #1d273b);
+
   /* Mixed from text and surface so it stays readable on every GLPI palette. */
   --tb-muted: color-mix(in srgb, var(--tb-text) 80%, var(--tb-surface));
   --tb-border: var(--tblr-border-color, #e6e7e9);

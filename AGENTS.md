@@ -56,19 +56,19 @@ The full specification, decisions and roadmap live in [.agents/PLAN.md](.agents/
 
 ## Commands
 
-| Command                                | Purpose                                                                  |
-| -------------------------------------- | ------------------------------------------------------------------------ |
-| `make help`                            | List every target                                                        |
-| `make install`                         | Install Node dependencies and git hooks                                  |
-| `make up` / `make down` / `make reset` | Start / stop / wipe GLPI 11 (:8011), GLPI 12 (:8012), MariaDB            |
-| `make build`                           | Compile locales and build the frontend bundle                            |
-| `make install-plugin`                  | Build, then install and activate the plugin in both GLPI containers      |
-| `make lint`                            | ESLint, Prettier, tsc, PHP lint, php-cs-fixer, PHPStan, Rector           |
-| `make test`                            | Vitest (coverage >= 90%) and PHPUnit on GLPI 11 and 12 (coverage >= 85%) |
-| `make e2e`                             | Playwright against the running containers                                |
-| `make check`                           | Everything CI runs except e2e                                            |
-| `pnpm agents:check`                    | Rule guards: emojis, attribution, memory caps, translations, frontmatter |
-| `pnpm agents:link <FILENAME>`          | Local symlink to this file for tools that expect another filename        |
+| Command                                | Purpose                                                                   |
+| -------------------------------------- | ------------------------------------------------------------------------- |
+| `make help`                            | List every target                                                         |
+| `make install`                         | Install Node dependencies and git hooks                                   |
+| `make up` / `make down` / `make reset` | Start / stop / wipe GLPI 11 (:8011), GLPI 12 (:8012), MariaDB             |
+| `make build`                           | Compile locales and build the frontend bundle                             |
+| `make install-plugin`                  | Build, then install and activate the plugin in both GLPI containers       |
+| `make lint`                            | ESLint, Stylelint, Prettier, tsc, PHP lint, php-cs-fixer, PHPStan, Rector |
+| `make test`                            | Vitest (coverage >= 90%) and PHPUnit on GLPI 11 and 12 (coverage >= 85%)  |
+| `make e2e`                             | Playwright against the running containers                                 |
+| `make check`                           | Everything CI runs except e2e                                             |
+| `pnpm agents:check`                    | Rule guards: emojis, attribution, memory caps, translations, frontmatter  |
+| `pnpm agents:link <FILENAME>`          | Local symlink to this file for tools that expect another filename         |
 
 Default GLPI accounts in the containers: `glpi/glpi` (super-admin), `tech/tech`,
 `normal/normal`, `post-only/postonly` (self-service).

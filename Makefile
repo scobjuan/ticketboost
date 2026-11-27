@@ -42,7 +42,7 @@ seed: ## Seed the e2e data (users tech1 and tech2, six tickets) in the running G
 
 lint: lint-ts lint-php ## All linters
 
-lint-ts: ## ESLint, Prettier and TypeScript
+lint-ts: ## ESLint, Stylelint, Prettier and TypeScript
 	pnpm lint
 	pnpm format:check
 	pnpm typecheck
