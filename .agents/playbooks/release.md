@@ -21,6 +21,7 @@ Releases are automatic; humans and agents only merge.
      repository, on free ports; the development environment stays untouched;
    - `podman cp` the archive, extract it as root into `/var/www/glpi/plugins`, then as `www-data` run
      `bin/console plugin:install --username=glpi ticketboost` and `plugin:activate ticketboost`;
+   - open `/front/marketplace.php` as the administrator and check that the plugin shows its logo;
    - e2e: copy `e2e/seed/seed.php` to each container, run it as `www-data`, and run Playwright with
      `GLPI11_URL` and `GLPI12_URL` pointing at them (for WebKit pass both to the Playwright container);
    - check `/var/glpi/logs/php-errors.log`, run `plugin:uninstall` and confirm that no plugin table,
