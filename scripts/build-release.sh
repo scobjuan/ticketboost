@@ -23,6 +23,8 @@ for path in setup.php hook.php plugin.xml composer.json LICENSE README.md CHANGE
   [ -e "$path" ] && cp -R "$path" "$dest/"
 done
 cp locales/*.mo locales/*.po "$dest/locales/"
+# GLPI shows logo.png from the plugin directory in its plugin list.
+cp docs/assets/logo.png "$dest/logo.png"
 rm -f "$dest/public/.gitkeep"
 
 mkdir -p dist
