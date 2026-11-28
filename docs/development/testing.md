@@ -3,12 +3,12 @@
 Tests are a merge requirement: CI blocks any pull request with a failing test or with
 coverage below the thresholds.
 
-| Layer                    | Tool                                             | Location                          | Command         | Gate                                       |
-| ------------------------ | ------------------------------------------------ | --------------------------------- | --------------- | ------------------------------------------ |
-| TypeScript unit          | Vitest + happy-dom                               | `frontend/tests/`                 | `make test-ts`  | 90% lines, branches, functions, statements |
-| PHP unit and integration | PHPUnit (GLPI test framework)                    | `tests/Unit`, `tests/Integration` | `make test-php` | 85% lines                                  |
-| End to end               | Playwright                                       | `e2e/specs/`                      | `make e2e`      | All specs on GLPI 11 and 12                |
-| Static analysis          | ESLint, tsc, PHPStan (max), Rector, php-cs-fixer | -                                 | `make lint`     | No errors                                  |
+| Layer                    | Tool                                                        | Location                          | Command         | Gate                                       |
+| ------------------------ | ----------------------------------------------------------- | --------------------------------- | --------------- | ------------------------------------------ |
+| TypeScript unit          | Vitest + happy-dom                                          | `frontend/tests/`                 | `make test-ts`  | 90% lines, branches, functions, statements |
+| PHP unit and integration | PHPUnit (GLPI test framework)                               | `tests/Unit`, `tests/Integration` | `make test-php` | 85% lines                                  |
+| End to end               | Playwright                                                  | `e2e/specs/`                      | `make e2e`      | All specs on GLPI 11 and 12                |
+| Static analysis          | ESLint, Stylelint, tsc, PHPStan (max), Rector, php-cs-fixer | -                                 | `make lint`     | No errors                                  |
 
 ## PHP tests
 
