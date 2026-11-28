@@ -24,9 +24,9 @@ Playwright projects combine a GLPI version and a browser: `glpi11-chromium`,
 `pnpm e2e --project=glpi11-chromium`. Helpers live in `e2e/support/`.
 
 The specs rely on seeded data: users `tech1` and `tech2` (Technician profile, password equal
-to the login), `tech-es` (GLPI in Spanish), `tech-dark` (dark palette) and six tickets titled `[tb-seed] 1` to `[tb-seed] 6`. `make seed` creates
-them in both containers and is idempotent; `make e2e` runs it first, and CI runs
-`scripts/glpi-seed.sh` before Playwright.
+to the login), `tech-es` (GLPI in Spanish), `tech-dark` (dark palette), the group `[tb-seed] Team`
+and six tickets titled `[tb-seed] 1` to `[tb-seed] 6`. `make seed` creates them in both containers
+and is idempotent; `make e2e` runs it first, and CI runs `scripts/glpi-seed.sh` before Playwright.
 
 ## Accessibility
 

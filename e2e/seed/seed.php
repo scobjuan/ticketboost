@@ -33,14 +33,16 @@
  * Seeds the data the e2e specs rely on. Run it inside a GLPI container:
  *   php /var/www/glpi/plugins/ticketboost/e2e/seed/seed.php
  *
- * It is idempotent: users and tickets are found by login and by title. It also restores the
- * starting state, so a run never inherits the leftovers of the previous one: the tickets the
- * specs created (`[tb-e2e]`) are purged, the seeded tickets get their assignee and status back and the
- * plugin settings, including the personal ones, return to their defaults.
+ * It is idempotent: users, the group and tickets are found by login, name and title. It also
+ * restores the starting state, so a run never inherits the leftovers of the previous one: the
+ * tickets the specs created (`[tb-e2e]`) are purged, the seeded tickets get their assignee and
+ * status back, with no group assigned, and the plugin settings, including the personal ones,
+ * return to their defaults.
  *
  *   tech1, tech2   Technician profile, password equal to the login
  *   tech-es        the same, with GLPI in Spanish
  *   tech-dark      the same, with a dark colour palette
+ *   [tb-seed] Team group that tickets can be assigned to
  *   [tb-seed] 1-6  tickets; 1-3 assigned to tech1, 4-5 to tech2, 6 unassigned;
  *                  1, 4 and 6 requested by the self-service account (post-only)
  */
@@ -113,6 +115,24 @@ $tech2    = seed_technician('tech2');
 $selfserv = seed_user_id('post-only');
 
 /**
+ * Creates the group the assignment specs pick, unless it exists.
+ */
+function seed_group(string $name): void
+{
+    if (countElementsInTable('glpi_groups', ['name' => $name]) > 0) {
+        return;
+    }
+
+    $input = ['name' => $name, 'entities_id' => 0, 'is_recursive' => 1, 'is_assign' => 1];
+    if ((new Group())->add($input) === false) {
+        fwrite(STDERR, 'Could not create ' . $name . "\n");
+        exit(1);
+    }
+}
+
+seed_group('[tb-seed] Team');
+
+/**
  * Purges the tickets the specs created, so they never reach a list a spec walks.
  */
 function seed_purge_spec_tickets(): int
@@ -146,6 +166,11 @@ function seed_restore_ticket(int $ticket_id, int $assignee): void
         && countElementsInTable('glpi_tickets_users', ['tickets_id' => $ticket_id, 'users_id' => $assignee, 'type' => CommonITILActor::ASSIGN]) === 0
     ) {
         $link->add(['tickets_id' => $ticket_id, 'users_id' => $assignee, 'type' => CommonITILActor::ASSIGN]);
+    }
+
+    $group_link = new Group_Ticket();
+    foreach (getAllDataFromTable('glpi_groups_tickets', ['tickets_id' => $ticket_id, 'type' => CommonITILActor::ASSIGN]) as $row) {
+        $group_link->delete(['id' => (int) $row['id']], true);
     }
 
     $status = $assignee > 0 ? Ticket::ASSIGNED : Ticket::INCOMING;
