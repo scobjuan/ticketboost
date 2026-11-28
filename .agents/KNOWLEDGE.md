@@ -52,7 +52,7 @@ that become false. Format: `path` `signature` - purpose.
 - `e2e/support/glpi.ts` `createTicket(page, title)` - creates a `[tb-e2e]` ticket through GLPI's form endpoint (token on 11, none on 12) so a spec can change or close it; use it instead of mutating seed tickets.
 - `shared/keymap-cases.json` - cases shared by Vitest and PHPUnit; change the grammar there first.
 - `e2e/support/glpi.ts` `login(page, user)`, `USERS` (`admin`, `tech`, `tech1`, `tech2`, `normal`, `selfservice`), `waitForPanel(page)`, `leaderThen(page, key)`, `openSeedList(page)` - log in, drive the panel, open the seeded list (it also fills GLPI's session list).
-- `e2e/seed/seed.php` (run by `make seed` / `scripts/glpi-seed.sh`, idempotent) - users `tech1`, `tech2` (Technician) and tickets `[tb-seed] 1-6`: 1-3 assigned to tech1, 4-5 to tech2; 1, 4, 6 requested by post-only.
+- `e2e/seed/seed.php` (run by `make seed` / `scripts/glpi-seed.sh`, idempotent) - users `tech1`, `tech2` (Technician), the assignable group `[tb-seed] Team` and tickets `[tb-seed] 1-6`: 1-3 assigned to tech1, 4-5 to tech2; 1, 4, 6 requested by post-only.
 - `frontend/tests/support/keys.ts` `keyLike(key, extra)`, `dispatchKey(target, type, init)`, `tapControl(target)` - fake and real key events for Vitest.
 
 ### Scripts and tools
@@ -65,9 +65,11 @@ that become false. Format: `path` `signature` - purpose.
 - `scripts/locales-compile.sh` - `.po` -> `.mo` plus regional copies (en_US, es_419, es_AR, es_CL, es_CO, es_EC, es_MX, es_VE).
 - `scripts/build-release.sh <version>` - allowlisted runtime files -> `dist/ticketboost-<version>.tar.bz2` and its
   copy `dist/ticketboost.tar.bz2` (release-please rewrites one version per line, so `plugin.xml` links the copy).
+  It copies `docs/assets/logo.png` to `logo.png` at the root of the archive.
 - `scripts/glpi-plugin.sh "<compose>" <services...>` - install + activate the plugin in running containers.
 - `scripts/glpi-wait.sh <urls...>` - wait for GLPI to answer.
 - `scripts/size-check.mjs` - 15 KB gzip budget for `public/js` + `public/css`.
+- `.stylelintrc.json` - standard Stylelint rules plus the mandatory `tb-` class prefix; part of `pnpm lint`.
 
 ## Patterns
 
@@ -83,6 +85,8 @@ that become false. Format: `path` `signature` - purpose.
 
 ## GLPI gotchas
 
+- The plugin list shows `logo.png` from the plugin directory (served at `/Plugin/<key>/Logo`). GLPI 12 asks
+  for the password again (`/ReAuth/Prompt`) before it opens `/front/marketplace.php`.
 - GLPI 11+ serves only the plugin `public/` directory; hooks reference assets relative
   to it (`js/ticketboost.js`), the same pattern pluginsGLPI/fields uses.
 - `plugins/<key>` folder name, plugin key and gettext domain must all be `ticketboost`;
@@ -209,6 +213,14 @@ that become false. Format: `path` `signature` - purpose.
 
 ## Tooling learnings
 
+- The ruleset on `main` names the 10 CI jobs: renaming or adding a job means updating the ruleset too.
+- While Playwright runs from the repository mount, prepare other branches in a `git worktree`.
+- Right after a PR is opened `gh pr checks --watch` fails with "no checks reported": wait until
+  `gh run list --branch <branch>` returns an id, then use `gh run watch <id> --exit-status`.
+- Browsers never hand Ctrl+N (nor Ctrl+T, Ctrl+W) to a page, and Ctrl+letter held while the panel is open
+  keeps its browser meaning (by design: tap the leader, release, press the letter).
+- The full e2e run takes about 30 minutes: run it in the background and do not edit PHP, templates or
+  specs meanwhile (the containers mount the repository).
 - TypeScript 7 is not supported by typescript-eslint 8 (peer `<6.1`): TS is pinned to `~6.0`
   and `.github/dependabot.yml` ignores TS major updates; drop both once supported.
 - Dependabot pull request bodies quote upstream release notes with emojis: `ci.yml` checks only
