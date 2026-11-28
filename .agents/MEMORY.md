@@ -29,7 +29,7 @@ Decisions go to `.agents/decisions/`, reusable knowledge to `.agents/KNOWLEDGE.m
    hard to undo: tags the version, publishes the archive and the docs).
 2. Verify the published archive on a clean GLPI 11 and 12 (playbook `release.md`, step 5) and the docs site.
 3. Owner: submit `plugin.xml` to the GLPI marketplace; optionally set the repository homepage to the docs.
-4. PR #19 (development dependencies) conflicts since #21: let Dependabot rebase it, merge after the release.
+4. PR #23 (development dependencies, Dependabot's replacement of #19): merge after the release.
 5. Ask the owner whether to delete the merged branches on GitHub (`docs/release-ready`, `build/plugin-logo`,
    `ci/stylelint`, `test/group-assignment`, `docs/pre-release`).
 6. After 0.1.0, candidates: skip the bootstrap request on the login page (it answers 401); delete the
