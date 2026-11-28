@@ -96,6 +96,36 @@ test('O assigns another technician and X removes them', async ({
   expect(((await left.json()) as { data: unknown[] }).data).toEqual([])
 })
 
+test('O assigns a group and X removes it', async ({ page }) => {
+  const id = await openFreeTicket(page)
+
+  await leaderThen(page, 'o')
+  await page.locator('.tb-picker__input').fill('tb-seed] Team')
+  await expect(page.locator('.tb-option')).toHaveCount(1)
+  await expect(page.locator('.tb-option')).toContainText('[tb-seed] Team')
+  await expect(page.locator('.tb-option__detail')).toHaveText('Group')
+  await page.keyboard.press('Enter')
+  await expect(page.getByText('The ticket was assigned').first()).toBeVisible()
+
+  await page.goto(`/front/ticket.form.php?id=${String(id)}`)
+  await leaderThen(page, 'x')
+  await expect(
+    page.locator('.tb-option', { hasText: '[tb-seed] Team' })
+  ).toBeVisible()
+  await page.keyboard.press('Enter')
+  await expect(page.locator('.tb-option[aria-selected="true"]')).toHaveCount(1)
+  await page.keyboard.press('Control+Enter')
+  await expect(
+    page.getByText('The selected assignees were removed').first()
+  ).toBeVisible()
+
+  const left = await page.request.get(
+    `${SEARCH}?action=unassign_others&id=${String(id)}`,
+    { headers: AJAX }
+  )
+  expect(((await left.json()) as { data: unknown[] }).data).toEqual([])
+})
+
 test('a POST that fails the CSRF protection is refused and changes nothing', async ({
   page
 }, testInfo) => {
